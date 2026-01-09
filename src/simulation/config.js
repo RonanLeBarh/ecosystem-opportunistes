@@ -28,4 +28,9 @@ export const CONFIG = {
 
     // --- Simulation ---
     SIMULATION_SPEED: 1,              // cycles par frame (modifiable)
+
+    // --- Reproduction ---
+    REPRODUCTION_ENERGY_THRESHOLD: 80,   // énergie minimale pour se reproduire
+    REPRODUCTION_ENERGY_COST: 40,        // coût pour le parent
+
 };

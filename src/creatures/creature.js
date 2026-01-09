@@ -2,6 +2,7 @@
 
 import { Traits } from "./traits.js";
 import { CONFIG } from "../simulation/config.js";
+import { Reproduction } from "./reproduction.js";
 
 export class Creature {
     constructor(x, y, traits = Traits.random()) {
@@ -34,6 +35,10 @@ export class Creature {
 
         const action = this.decide(world);
         this.executeAction(action, world);
+        // Reproduction
+        if (Reproduction.canReproduce(this)) {
+            Reproduction.createOffspring(this, world);
+        }
     }
 
     // Décision simple (sera améliorée dans behavior.js)
