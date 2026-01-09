@@ -5,6 +5,7 @@ import { ResourcesManager } from "../engine/resources.js";
 import { ObstaclesManager } from "../engine/obstacles.js";
 import { Creature } from "../creatures/creature.js";
 import { CONFIG } from "./config.js";
+import { Logger } from "../logging/logger.js";
 
 export class Simulation {
     constructor() {
@@ -21,6 +22,12 @@ export class Simulation {
         // --- Cycle ---
         this.cycle = 0;
         this.running = false;
+
+        // --- Logger ---
+        this.logger = new Logger();
+
+        // Lien retour pour le logging depuis le monde
+        this.world.simulation = this;
     }
 
     // Initialisation complète
@@ -49,7 +56,13 @@ export class Simulation {
 
         const creature = new Creature(x, y);
         this.creatures.push(creature);
-        cell.creature = creature;
+            cell.creature = creature;
+            this.logger.log("birth_initial", {
+                x,
+                y,
+                cycle: this.cycle
+            });
+
     }
 
     // Un cycle complet de simulation
@@ -68,6 +81,12 @@ export class Simulation {
 
         // Nettoyage des créatures mortes
         this.creatures = this.creatures.filter(c => !c.dead);
+
+        // Logging de la population
+        this.logger.log("population", {
+            count: this.creatures.length,
+            cycle: this.cycle
+        });
     }
 
     // Boucle continue (sera liée au renderer)

@@ -108,5 +108,12 @@ export class Creature {
             cell.creature = null;
         }
         this.dead = true;
+        world.simulation.logger.log("death", {
+            x: this.x,
+            y: this.y,
+            age: this.age,
+            energy: this.energy,
+            cycle: world.simulation.cycle
+        });
     }
 }
