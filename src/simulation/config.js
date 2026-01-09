@@ -32,5 +32,8 @@ export const CONFIG = {
     // --- Reproduction ---
     REPRODUCTION_ENERGY_THRESHOLD: 80,   // énergie minimale pour se reproduire
     REPRODUCTION_ENERGY_COST: 40,        // coût pour le parent
+    
+    // --- Vision ---
+    VISION_RANGE: 5,
 
 };

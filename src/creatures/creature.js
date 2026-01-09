@@ -3,6 +3,7 @@
 import { Traits } from "./traits.js";
 import { CONFIG } from "../simulation/config.js";
 import { Reproduction } from "./reproduction.js";
+import { Behavior } from "./behavior.js";
 
 export class Creature {
     constructor(x, y, traits = Traits.random()) {
@@ -41,19 +42,9 @@ export class Creature {
         }
     }
 
-    // Décision simple (sera améliorée dans behavior.js)
+    // Décision de l'action à effectuer
     decide(world) {
-        // Pour l'instant : comportement minimal
-        // - si ressource sur place → manger
-        // - sinon → se déplacer aléatoirement
-
-        const cell = world.getCell(this.x, this.y);
-
-        if (cell.resource) {
-            return "eat";
-        }
-
-        return "move_random";
+        return Behavior.decide(this, world);
     }
 
     // Exécution de l'action
@@ -66,7 +57,28 @@ export class Creature {
             case "move_random":
                 this.moveRandom(world);
                 break;
+            case "move_towards":
+                this.moveTowards(action.target, world);
+                break;
         }
+    }
+    
+    // Déplacement vers une cible
+    moveTowards(target, world) {
+        const dx = Math.sign(target.x - this.x);
+        const dy = Math.sign(target.y - this.y);
+
+        const newX = this.x + dx;
+        const newY = this.y + dy;
+
+        if (!world.isInside(newX, newY)) return;
+
+        const cell = world.getCell(newX, newY);
+        if (cell.obstacle || cell.creature) return;
+
+        world.moveCreature(this.x, this.y, newX, newY);
+        this.x = newX;
+        this.y = newY;
     }
 
     // Manger une ressource
