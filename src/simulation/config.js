@@ -14,8 +14,8 @@ export const CONFIG = {
     OBSTACLE_DENSITY: 0.00,           // densité initiale (2%)
 
     // --- Créatures ---
-    CREATURE_START_ENERGY: 50,
-    CREATURE_ENERGY_COST: 0.5,        // coût de maintenance par cycle
+    CREATURE_INITIAL_ENERGY: 20,         // énergie initiale 20
+    //CREATURE_ENERGY_COST: 0.5,        // coût de maintenance par cycle
 
     // Durée de vie génétique
     CREATURE_MAX_AGE_MIN: 200,
@@ -32,11 +32,11 @@ export const CONFIG = {
 
 
     // --- Reproduction ---
-    REPRODUCTION_ENERGY_THRESHOLD: 800,   // énergie minimale pour se reproduire 80
-    REPRODUCTION_ENERGY_COST: 800,        // coût pour le parent 40
+    REPRODUCTION_ENERGY_THRESHOLD: 80,   // énergie minimale pour se reproduire 80
+    REPRODUCTION_ENERGY_COST: 40,        // coût pour le parent 40
     
     // --- Vision ---
-    VISION_RANGE: 10,                 // portée de vision des créatures
+    //VISION_RANGE: 10,                 // portée de vision des créatures
 
     // --- Debug ---
     DEBUG: true,              // active/désactive tous les logs
@@ -44,5 +44,23 @@ export const CONFIG = {
     DEBUG_LOG_MOVEMENT: true, // log des déplacements
     DEBUG_LOG_DECISIONS: true,// log des décisions
     DEBUG_LOG_VISION: true,   // log de ce qu’elle voit
+
+    // --- Bornes génétiques ---
+    GENE_LIMITS: {
+        SPEED_MIN: 1,
+        SPEED_MAX: 5,
+
+        VISION_MIN: 1,
+        VISION_MAX: 10,
+
+        METABOLISM_MIN: 0.2,
+        METABOLISM_MAX: 3,
+
+        FERTILITY_MIN: 0.1,
+        FERTILITY_MAX: 1,
+
+        MUTATION_RATE_MIN: 0.01,
+        MUTATION_RATE_MAX: 0.1
+    },
 
 };

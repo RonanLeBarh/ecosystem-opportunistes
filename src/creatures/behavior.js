@@ -48,7 +48,7 @@ export class Behavior {
 
     // Cherche une ressource dans un rayon de vision
     static findNearbyResource(creature, world) {
-        const vision = CONFIG.VISION_RANGE;
+        const vision = Math.floor(creature.genes.vision);
         let best = null;
         let bestDist = Infinity;
 

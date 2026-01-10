@@ -48,11 +48,26 @@ export class Reproduction {
                 });
                 // Le parent perd de l'énergie
                 parent.energy -= CONFIG.REPRODUCTION_ENERGY_COST;
-
+                // Génétique du child avec mutation
+                const p = parent;
+                const L = CONFIG.GENE_LIMITS;
+                child.genes = {
+                    speed: Reproduction.mutateGene(p.genes.speed, p.genes.mutationRate, L.SPEED_MIN, L.SPEED_MAX),
+                    vision: Reproduction.mutateGene(p.genes.vision, p.genes.mutationRate, L.VISION_MIN, L.VISION_MAX),
+                    metabolism: Reproduction.mutateGene(p.genes.metabolism, p.genes.mutationRate, L.METABOLISM_MIN, L.METABOLISM_MAX),
+                    fertility: Reproduction.mutateGene(p.genes.fertility, p.genes.mutationRate, L.FERTILITY_MIN, L.FERTILITY_MAX),
+                    mutationRate: Reproduction.mutateGene(p.genes.mutationRate, p.genes.mutationRate, L.MUTATION_RATE_MIN, L.MUTATION_RATE_MAX)
+                };
                 return child;
             }
         }
 
         return null; // pas de place
+    }
+    static mutateGene(value, rate, min = 0.1, max = 10) {
+        if (Math.random() < rate) {
+            value += (Math.random() - 0.5) * 0.2;
+        }
+        return Math.max(min, Math.min(max, value));
     }
 }

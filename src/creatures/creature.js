@@ -16,7 +16,7 @@ export class Creature {
         this.traits = traits;
 
         // États dynamiques
-        this.energy = CONFIG.CREATURE_START_ENERGY;
+        this.energy = CONFIG.CREATURE_INITIAL_ENERGY;
         this.age = 0;
 
         // Mémoire simple (sera étendue plus tard)
@@ -25,13 +25,20 @@ export class Creature {
             lastDanger: null,
             lastObservedSuccess: null
         };
+        this.genes = {
+            speed: 1.0,          // vitesse de déplacement
+            vision: 3,           // rayon de vision
+            metabolism: 1.0,     // énergie consommée par cycle
+            fertility: 0.5,      // probabilité de reproduction
+            mutationRate: 0.02   // chance de mutation par gène
+        };
     }
 
     // Mise à jour d'une créature à chaque cycle
     update(world) {
 
         // Perte d'énergie
-        this.energy -= CONFIG.CREATURE_ENERGY_COST;// coût de maintenance
+        this.energy -= this.genes.metabolism;// coût de maintenance
 
         // Si énergie <= 0 → clamp à 0 et mort instantanée
         if (this.energy <= 0) {
@@ -56,9 +63,13 @@ export class Creature {
             this.die(world);
             return;
         }
-        // Décision et action
-        const action = this.decide(world);
-        this.executeAction(action, world);
+
+        // Déplacement selon la vitesse génétique
+        const steps = Math.floor(this.genes.speed);
+        for (let i = 0; i < steps; i++) {
+            const action = this.decide(world);
+            this.executeAction(action, world);
+        }
 
         // Reproduction
         if (Reproduction.canReproduce(this)) {
