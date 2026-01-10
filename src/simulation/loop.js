@@ -58,6 +58,7 @@ export class Simulation {
         this.creatures.push(creature);
             cell.creature = creature;
             this.logger.log("birth_initial", {
+                creatureId: creature.id,
                 x,
                 y,
                 cycle: this.cycle
@@ -68,7 +69,7 @@ export class Simulation {
     // Un cycle complet de simulation
     step() {
         this.cycle++;
-
+        this.logger.log("cycle", { cycle: this.cycle });
         // Régénération des ressources
         this.resources.regenerate(this.world);
 

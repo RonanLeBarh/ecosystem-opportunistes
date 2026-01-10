@@ -8,7 +8,7 @@ export class Behavior {
 
         // 1. Si ressource sur place → manger
         if (cell.resource) {
-            world.simulation.logger.debug("decision", {
+            world.simulation.logger.log("decision", {
                 creatureId: creature.id,
                 action: "eat",
                 reason: "resource_on_cell",
@@ -21,7 +21,11 @@ export class Behavior {
         // 2. Chercher une ressource proche
         const target = this.findNearbyResource(creature, world);
         if (target) {
-            world.simulation.logger.debug("decision", {
+            world.simulation.logger.log("vision", {
+                creatureId: creature.id,
+                target
+            });
+            world.simulation.logger.log("decision", {
                 creatureId: creature.id,
                 action: "move_towards",
                 target,
@@ -32,7 +36,7 @@ export class Behavior {
         }
 
         // 3. Sinon → déplacement aléatoire
-        world.simulation.logger.debug("decision", {
+        world.simulation.logger.log("decision", {
             creatureId: creature.id,
             action: "move_random",
             reason: "no_resource_found",
@@ -47,21 +51,29 @@ export class Behavior {
         const vision = CONFIG.VISION_RANGE;
         let best = null;
         let bestDist = Infinity;
+
         for (let dy = -vision; dy <= vision; dy++) {
             for (let dx = -vision; dx <= vision; dx++) {
+
                 const nx = creature.x + dx;
                 const ny = creature.y + dy;
 
                 if (!world.isInside(nx, ny)) continue;
+                if (dx === 0 && dy === 0) continue;
 
                 const cell = world.getCell(nx, ny);
                 if (!cell.resource) continue;
 
-                // distance manhattan
+                // Distance manhattan
                 const dist = Math.abs(dx) + Math.abs(dy);
 
-                if (dist < bestDist) {
-                    bestDist = dist;
+                // Ajout d'un léger bruit pour casser les égalités
+                const noise = Math.random() * 0.0001;
+
+                const score = dist + noise;
+
+                if (score < bestDist) {
+                    bestDist = score;
                     best = { x: nx, y: ny };
                 }
             }
@@ -69,4 +81,5 @@ export class Behavior {
 
         return best;
     }
+
 }

@@ -30,14 +30,22 @@ export class Reproduction {
                 const child = new Creature(nx, ny, childTraits);
                 cell.creature = child;
                 world.simulation.creatures.push(child);
+                world.simulation.logger.log("reproduction", {
+                    parentId: parent.id,
+                    childId: child.id,
+                    x: nx,
+                    y: ny,
+                    cycle: world.simulation.cycle
+                });
                 world.simulation.logger.log("birth_reproduction", {
+                    parentId: parent.id,
+                    childId: child.id,
                     parentX: parent.x,
                     parentY: parent.y,
                     childX: nx,
                     childY: ny,
                     cycle: world.simulation.cycle
                 });
-
                 // Le parent perd de l'énergie
                 parent.energy -= CONFIG.REPRODUCTION_ENERGY_COST;
 

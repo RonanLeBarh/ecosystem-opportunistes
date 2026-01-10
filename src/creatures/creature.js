@@ -29,16 +29,37 @@ export class Creature {
 
     // Mise à jour d'une créature à chaque cycle
     update(world) {
-        this.age++;
-        this.energy -= CONFIG.CREATURE_ENERGY_COST; // coût de maintenance
 
-        if (this.energy <= 0 || this.age >= this.traits.max_age) {
+        // Perte d'énergie
+        this.energy -= CONFIG.CREATURE_ENERGY_COST;// coût de maintenance
+
+        // Si énergie <= 0 → clamp à 0 et mort instantanée
+        if (this.energy <= 0) {
+            this.energy = 0;
+            world.simulation.logger.log("death_energy", {
+                creatureId: this.id,
+                age: this.age,
+                energy: this.energy
+            });
             this.die(world);
             return;
         }
 
+        // Vieillissement
+        this.age++;
+        if (this.age >= this.traits.max_age) {
+            world.simulation.logger.log("death_age", {
+                creatureId: this.id,
+                age: this.age,
+                energy: this.energy
+            });
+            this.die(world);
+            return;
+        }
+        // Décision et action
         const action = this.decide(world);
         this.executeAction(action, world);
+
         // Reproduction
         if (Reproduction.canReproduce(this)) {
             Reproduction.createOffspring(this, world);
@@ -89,7 +110,7 @@ export class Creature {
 
         const cell = world.getCell(newX, newY);
         if (cell.obstacle || cell.creature) {
-            world.simulation.logger.debug("move_blocked", {
+            world.simulation.logger.log("move_blocked", {
                 creatureId: this.id,
                 from: { x: this.x, y: this.y },
                 attempted: { x: newX, y: newY },
@@ -102,7 +123,7 @@ export class Creature {
         world.moveCreature(this.x, this.y, newX, newY);
         this.x = newX;
         this.y = newY;
-        world.simulation.logger.debug("move_towards", {
+        world.simulation.logger.log("move_towards", {
             creatureId: this.id,
             from: { x: this.x, y: this.y },
             to: { x: newX, y: newY },
@@ -119,7 +140,13 @@ export class Creature {
             cell.resource = false;
             this.energy += CONFIG.RESOURCE_ENERGY_VALUE;
         }
-        console.log("Creature", this.id, "a mangé une ressource en", this.x, this.y);
+        world.simulation.logger.log("eat", {
+            creatureId: this.id,
+            x: this.x,
+            y: this.y,
+            energy: this.energy
+        });
+
     }
 
     // Déplacement aléatoire simple
@@ -139,7 +166,7 @@ export class Creature {
         const target = world.getCell(newX, newY);
 
         if (target.obstacle || target.creature) {
-            world.simulation.logger.debug("move_blocked", {
+            world.simulation.logger.log("move_blocked", {
                 creatureId: this.id,
                 from: { x: this.x, y: this.y },
                 attempted: { x: newX, y: newY },
@@ -153,7 +180,7 @@ export class Creature {
         world.moveCreature(this.x, this.y, newX, newY);
         this.x = newX;
         this.y = newY;
-        world.simulation.logger.debug("move_random", {
+        world.simulation.logger.log("move_random", {
             creatureId: this.id,
             from: { x: this.x, y: this.y },
             to: { x: newX, y: newY },
@@ -170,6 +197,7 @@ export class Creature {
         }
         this.dead = true;
         world.simulation.logger.log("death", {
+            creatureId: this.id,
             x: this.x,
             y: this.y,
             age: this.age,
