@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Écosystème d’Opportunistes Minimalistes</title>
-    <style>
-        body {
-            background: #111;
-            color: #eee;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-        }
-        canvas {
-            border: 1px solid #444;
-            image-rendering: pixelated;
-            background-color: #111;
-
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <title>Écosystème Opportunistes</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+    <div id="split">
+        <div class="half" id="left">
+            <canvas id="worldCanvas"></canvas>
+        </div>
 
-    <h1>Écosystème d’Opportunistes Minimalistes</h1>
-    <canvas id="worldCanvas" width="500" height="500"></canvas>
-
-    <script type="module" src="./src/main.js"></script>
+        <div class="half" id="right">
+            <div id="hud">
+                <h2>Écosystème</h2>
+                <!-- tes stats -->
+                <div class="hud-item"><span class="label">Créatures vivantes :</span><span id="hud-creatures">0</span>
+                </div>
+                <div class="hud-item"><span class="label">Âge moyen :</span><span id="hud-age">0</span></div>
+                <div class="hud-item"><span class="label">% morts énergie :</span><span id="hud-death-energy">0%</span>
+                </div>
+                <div class="hud-item"><span class="label">% morts vieillesse :</span><span id="hud-death-age">0%</span>
+                </div>
+                <div class="hud-item"><span class="label">Naissances (init / rep) :</span><span id="hud-births">0 /
+                        0</span></div>
+                <div class="hud-item"><span class="label">Cycle :</span><span id="hud-cycle">0</span></div>
+                <div class="hud-item"><span class="label">Ressources restantes :</span><span id="hud-resources">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="src/main.js"></script>
 </body>
+
 </html>

@@ -1,0 +1,45 @@
+/*style.css*/
+
+#hud h2 {
+    margin-top: 0;
+    font-size: 20px;
+    text-align: center;
+}
+
+.hud-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+}
+
+.label {
+    opacity: 0.8;
+}
+
+body {
+    margin: 0;
+    background: #000;
+    height: 100vh;
+}
+
+#split {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.half {
+    width: 50%;
+    display: flex;
+    justify-content: center;   /* centre horizontalement */
+    align-items: center;       /* centre verticalement */
+}
+
+#hud {
+    width: 260px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+}

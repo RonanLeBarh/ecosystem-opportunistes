@@ -63,6 +63,11 @@ export class Logger {
     }
 
     log(type, data) {
+        if (type === "birth_initial") this.simulation.stats.birthInitial++;
+        if (type === "birth_reproduction") this.simulation.stats.birthReproduction++;
+        if (type === "death_energy") this.simulation.stats.deathEnergy++;
+        if (type === "death_age") this.simulation.stats.deathAge++;
+        
         if (!DEBUG_CONFIG.DEBUG) return;
 
         if (DEBUG_CONFIG.DEBUG_LIMIT && this.count >= DEBUG_CONFIG.DEBUG_MAX_LOGS)

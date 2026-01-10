@@ -25,9 +25,23 @@ export class Simulation {
 
         // --- Logger ---
         this.logger = new Logger();
+        this.logger.simulation = this;
 
         // Lien retour pour le logging depuis le monde
         this.world.simulation = this;
+
+        // Statistiques de la simulation
+        this.stats = {
+            averageAge: 0,
+            deathEnergy: 0,
+            deathAge: 0,
+            deathEnergyPercent: 0,
+            deathAgePercent: 0,
+            birthInitial: 0,
+            birthReproduction: 0,
+            totalResources: 0
+        };
+
     }
 
     // Initialisation complète
@@ -98,7 +112,8 @@ export class Simulation {
                 cycle: this.cycle
             });
         }
-
+        this.updateStats();
+        window.hud.update();
     }
 
     // Boucle continue (sera liée au renderer)
@@ -121,4 +136,24 @@ export class Simulation {
     stop() {
         this.running = false;
     }
+    updateStats() {
+        const creatures = this.creatures;
+        const totalAge = creatures.reduce((sum, c) => sum + c.age, 0);
+        this.stats.averageAge = creatures.length ? totalAge / creatures.length : 0;
+
+        const totalDeaths = this.stats.deathEnergy + this.stats.deathAge;
+        this.stats.deathEnergyPercent = totalDeaths ? (this.stats.deathEnergy / totalDeaths) * 100 : 0;
+        this.stats.deathAgePercent = totalDeaths ? (this.stats.deathAge / totalDeaths) * 100 : 0;
+
+        // 🔥 Correction : compter les ressources dans le monde
+        let totalResources = 0;
+        for (let y = 0; y < this.world.height; y++) {
+            for (let x = 0; x < this.world.width; x++) {
+                const cell = this.world.getCell(x, y);
+                if (cell.resource) totalResources++;
+            }
+        }
+        this.stats.totalResources = totalResources;
+    }
+
 }
