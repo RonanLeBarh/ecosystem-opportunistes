@@ -81,12 +81,23 @@ export class Simulation {
 
         // Nettoyage des créatures mortes
         this.creatures = this.creatures.filter(c => !c.dead);
+        for (let y = 0; y < this.world.height; y++) {
+            for (let x = 0; x < this.world.width; x++) {
+                const cell = this.world.getCell(x, y);
+                if (cell.creature && cell.creature.dead) {
+                    cell.creature = null;
+                }
+            }
+        }
 
         // Logging de la population
-        this.logger.log("population", {
-            count: this.creatures.length,
-            cycle: this.cycle
-        });
+        if (this.creatures.length > 0) {
+            this.logger.log("population", {
+                count: this.creatures.length,
+                cycle: this.cycle
+            });
+        }
+
     }
 
     // Boucle continue (sera liée au renderer)

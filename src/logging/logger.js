@@ -21,4 +21,16 @@ export class Logger {
     getAll() {
         return this.entries;
     }
+
+    debug(type, data = {}) {
+        if (!data.config?.DEBUG) return;
+
+        // Filtrage par ID si demandé
+        if (data.config.DEBUG_CREATURE_ID !== null) {
+            if (data.creatureId !== data.config.DEBUG_CREATURE_ID) return;
+        }
+
+        console.log(`[DEBUG:${type}]`, data);
+    }
+
 }

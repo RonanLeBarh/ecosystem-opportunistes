@@ -8,7 +8,7 @@ export const CONFIG = {
     // --- Ressources ---
     RESOURCE_SPAWN_RATE: 0.05,        // densité initiale (5%)
     RESOURCE_REGEN_RATE: 0.01,        // régénération par cycle (1%)
-    RESOURCE_ENERGY_VALUE: 20,        // énergie gagnée en mangeant
+    RESOURCE_ENERGY_VALUE: 20,        // énergie gagnée en mangeant 20
 
     // --- Obstacles ---
     OBSTACLE_DENSITY: 0.02,           // densité initiale (2%)
@@ -27,13 +27,20 @@ export const CONFIG = {
     COLOR_MUTATION_AMOUNT: 10,        // mutation couleur (0–255)
 
     // --- Simulation ---
-    SIMULATION_SPEED: 1,              // cycles par frame (modifiable)
+    SIMULATION_SPEED: 1,              // cycles par frame (modifiable) 1
 
     // --- Reproduction ---
-    REPRODUCTION_ENERGY_THRESHOLD: 80,   // énergie minimale pour se reproduire
-    REPRODUCTION_ENERGY_COST: 40,        // coût pour le parent
+    REPRODUCTION_ENERGY_THRESHOLD: 800,   // énergie minimale pour se reproduire 80
+    REPRODUCTION_ENERGY_COST: 40000,        // coût pour le parent 40
     
     // --- Vision ---
-    VISION_RANGE: 5,
+    VISION_RANGE: 0,                 // portée de vision des créatures
+
+    // --- Debug ---
+    DEBUG: true,              // active/désactive tous les logs
+    DEBUG_CREATURE_ID: 12,   // si tu veux suivre UNE créature
+    DEBUG_LOG_MOVEMENT: true, // log des déplacements
+    DEBUG_LOG_DECISIONS: true,// log des décisions
+    DEBUG_LOG_VISION: true,   // log de ce qu’elle voit
 
 };

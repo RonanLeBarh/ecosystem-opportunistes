@@ -29,7 +29,7 @@ export class Reproduction {
 
                 const child = new Creature(nx, ny, childTraits);
                 cell.creature = child;
-                
+                world.simulation.creatures.push(child);
                 world.simulation.logger.log("birth_reproduction", {
                     parentX: parent.x,
                     parentY: parent.y,
