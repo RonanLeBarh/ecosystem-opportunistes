@@ -6,6 +6,14 @@ export class Behavior {
     static decide(creature, world) {
         const cell = world.getCell(creature.x, creature.y);
 
+        // Si carnivore → chercher une proie
+        if (creature.genes.carnivore > 0.5) {
+            const prey = this.findNearbyPrey(creature, world);
+            if (prey) {
+                return { type: "move_towards", target: prey };
+            }
+        }
+
         // 1. Si ressource sur place → manger
         if (cell.resource) {
             world.simulation.logger.log("decision", {
@@ -81,5 +89,34 @@ export class Behavior {
 
         return best;
     }
+    
+    // Cherche une proie dans un rayon de vision
+    static findNearbyPrey(creature, world) {
+        const vision = Math.floor(creature.genes.vision);
+
+        for (let dy = -vision; dy <= vision; dy++) {
+            for (let dx = -vision; dx <= vision; dx++) {
+
+                const nx = creature.x + dx;
+                const ny = creature.y + dy;
+
+                if (!world.isInside(nx, ny)) continue;
+                if (dx === 0 && dy === 0) continue;
+
+                const cell = world.getCell(nx, ny);
+                if (!cell.creature) continue;
+
+                const target = cell.creature;
+
+                // éviter le cannibalisme si tu veux
+                if (target === creature) continue;
+
+                return { x: nx, y: ny };
+            }
+        }
+
+        return null;
+    }
+
 
 }

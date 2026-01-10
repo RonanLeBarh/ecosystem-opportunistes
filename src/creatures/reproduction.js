@@ -56,7 +56,9 @@ export class Reproduction {
                     vision: Reproduction.mutateGene(p.genes.vision, p.genes.mutationRate, L.VISION_MIN, L.VISION_MAX),
                     metabolism: Reproduction.mutateGene(p.genes.metabolism, p.genes.mutationRate, L.METABOLISM_MIN, L.METABOLISM_MAX),
                     fertility: Reproduction.mutateGene(p.genes.fertility, p.genes.mutationRate, L.FERTILITY_MIN, L.FERTILITY_MAX),
-                    mutationRate: Reproduction.mutateGene(p.genes.mutationRate, p.genes.mutationRate, L.MUTATION_RATE_MIN, L.MUTATION_RATE_MAX)
+                    mutationRate: Reproduction.mutateGene(p.genes.mutationRate, p.genes.mutationRate, L.MUTATION_RATE_MIN, L.MUTATION_RATE_MAX),
+                    carnivore: Reproduction.mutateGene(p.genes.carnivore, p.genes.mutationRate, L.CARNIVORE_MIN, L.CARNIVORE_MAX),
+
                 };
                 return child;
             }

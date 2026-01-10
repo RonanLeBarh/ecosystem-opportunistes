@@ -30,7 +30,8 @@ export class Creature {
             vision: 3,           // rayon de vision
             metabolism: 1.0,     // énergie consommée par cycle
             fertility: 0.5,      // probabilité de reproduction
-            mutationRate: 0.02   // chance de mutation par gène
+            mutationRate: 0.02,   // chance de mutation par gène
+            carnivore: 0.0       // 0 = herbivore, 1 = carnivore, entre les deux = omnivore
         };
     }
 
@@ -120,6 +121,27 @@ export class Creature {
         if (!world.isInside(newX, newY)) return;
 
         const cell = world.getCell(newX, newY);
+
+        if (cell.creature && cell.creature !== this) {
+            if (this.genes.carnivore > 0.5) {
+                // tuer la proie
+                cell.creature.dead = true;
+
+                // gagner son énergie
+                this.energy += cell.creature.energy;
+
+                world.simulation.logger.log("predation", {
+                    predator: this.id,
+                    prey: cell.creature.id,
+                    cycle: world.simulation.cycle
+                });
+
+                // remplacer la créature dans la cellule
+                cell.creature = this;
+            }
+            return;
+        }
+
         if (cell.obstacle || cell.creature) {
             world.simulation.logger.log("move_blocked", {
                 creatureId: this.id,

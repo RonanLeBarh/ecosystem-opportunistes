@@ -60,7 +60,10 @@ export const CONFIG = {
         FERTILITY_MAX: 1,
 
         MUTATION_RATE_MIN: 0.01,
-        MUTATION_RATE_MAX: 0.1
+        MUTATION_RATE_MAX: 0.1,
+
+        CARNIVORE_MIN: 0,
+        CARNIVORE_MAX: 1,
     },
 
 };
