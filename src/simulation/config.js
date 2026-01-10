@@ -27,7 +27,9 @@ export const CONFIG = {
     COLOR_MUTATION_AMOUNT: 10,        // mutation couleur (0–255)
 
     // --- Simulation ---
-    SIMULATION_SPEED: 10,              // cycles par frame (modifiable) 1
+    SIMULATION_SPEED: 2,            // cycles par frame (1 lent → 20 très rapide)
+    SLOW_FACTOR: 5,                  // ralentit uniquement les petites vitesses 5 lent mais fluide 20 ultra lent
+
 
     // --- Reproduction ---
     REPRODUCTION_ENERGY_THRESHOLD: 800,   // énergie minimale pour se reproduire 80

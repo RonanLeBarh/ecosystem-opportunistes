@@ -9,7 +9,48 @@ import { HUD } from "./ui/hud.js";
 CONFIG.INITIAL_CREATURE_COUNT = 50;
 
 // Création de la simulation
-const sim = new Simulation();
+let sim = new Simulation();
+sim.init();
+document.getElementById("speed").value = CONFIG.SIMULATION_SPEED;
+
+// Bouton pause
+document.getElementById("btn-pause").addEventListener("click", () => {
+    if (sim.running) {
+        sim.stop();
+        document.getElementById("btn-pause").textContent = "Reprendre";
+    } else {
+        sim.start();
+        document.getElementById("btn-pause").textContent = "Pause";
+    }
+});
+
+// Bouton reset
+document.getElementById("btn-reset").addEventListener("click", () => {
+    sim.stop();
+
+    // Nouvelle simulation
+    sim = new Simulation();
+    sim.init();
+
+    // HUD mis à jour
+    window.hud.simulation = sim;
+
+    // Renderer mis à jour
+    renderer.simulation = sim;
+
+    // Redémarrage
+    sim.start();
+});
+
+
+// Slider vitesse
+document.getElementById("speed").addEventListener("input", (e) => {
+    CONFIG.SIMULATION_SPEED = Number(e.target.value);
+});
+
+
+
+
 sim.logger.simulation = sim;
 
 // Création du HUD

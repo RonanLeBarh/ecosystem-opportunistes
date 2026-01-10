@@ -43,3 +43,36 @@ body {
     border-radius: 8px;
     backdrop-filter: blur(4px);
 }
+
+#controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#controls button {
+    width: 120px;
+    padding: 8px 12px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#controls button:hover {
+    background: #333;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+}
+
+#speed {
+    width: 150px;
+}

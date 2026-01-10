@@ -116,15 +116,24 @@ export class Simulation {
         window.hud.update();
     }
 
-    // Boucle continue (sera liée au renderer)
+    // Boucle continue
     start() {
         this.running = true;
 
         const loop = () => {
             if (!this.running) return;
 
-            for (let i = 0; i < CONFIG.SIMULATION_SPEED; i++) {
+            let cycles = CONFIG.SIMULATION_SPEED;
+
+            // 🔥 Ralentir uniquement les petites vitesses
+            if (cycles === 1) cycles = 1 / CONFIG.SLOW_FACTOR;
+
+            // cycles peut être fractionnaire → accumulateur
+            this._accumulator = (this._accumulator || 0) + cycles;
+
+            while (this._accumulator >= 1) {
                 this.step();
+                this._accumulator -= 1;
             }
 
             requestAnimationFrame(loop);
@@ -132,6 +141,8 @@ export class Simulation {
 
         loop();
     }
+
+
 
     stop() {
         this.running = false;

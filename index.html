@@ -14,20 +14,31 @@
         </div>
 
         <div class="half" id="right">
-            <div id="hud">
-                <h2>Écosystème</h2>
-                <!-- tes stats -->
-                <div class="hud-item"><span class="label">Créatures vivantes :</span><span id="hud-creatures">0</span>
+            <div id="right"></div>
+                <div id="hud">
+                    <h2>Écosystème</h2>
+                    <!-- tes stats -->
+                    <div class="hud-item"><span class="label">Créatures vivantes :</span><span id="hud-creatures">0</span>
+                    </div>
+                    <div class="hud-item"><span class="label">Âge moyen :</span><span id="hud-age">0</span></div>
+                    <div class="hud-item"><span class="label">% morts énergie :</span><span id="hud-death-energy">0%</span>
+                    </div>
+                    <div class="hud-item"><span class="label">% morts vieillesse :</span><span id="hud-death-age">0%</span>
+                    </div>
+                    <div class="hud-item"><span class="label">Naissances (init / rep) :</span><span id="hud-births">0 /
+                            0</span></div>
+                    <div class="hud-item"><span class="label">Cycle :</span><span id="hud-cycle">0</span></div>
+                    <div class="hud-item"><span class="label">Ressources restantes :</span><span id="hud-resources">0</span>
+                    </div>
                 </div>
-                <div class="hud-item"><span class="label">Âge moyen :</span><span id="hud-age">0</span></div>
-                <div class="hud-item"><span class="label">% morts énergie :</span><span id="hud-death-energy">0%</span>
-                </div>
-                <div class="hud-item"><span class="label">% morts vieillesse :</span><span id="hud-death-age">0%</span>
-                </div>
-                <div class="hud-item"><span class="label">Naissances (init / rep) :</span><span id="hud-births">0 /
-                        0</span></div>
-                <div class="hud-item"><span class="label">Cycle :</span><span id="hud-cycle">0</span></div>
-                <div class="hud-item"><span class="label">Ressources restantes :</span><span id="hud-resources">0</span>
+                <div id="controls">
+                    <button id="btn-pause">Pause</button>
+                    <button id="btn-reset">Reset</button>
+
+                    <div class="control-group">
+                        <label for="speed">Vitesse :</label>
+                        <input type="range" id="speed" min="1" max="20" value="1">
+                    </div>
                 </div>
             </div>
         </div>
