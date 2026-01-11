@@ -19,8 +19,9 @@ export const DEBUG_CONFIG = {
 
     // Morts spécifiques
     DEBUG_DEATH: false,          // mort générique (si tu veux garder)
-    DEBUG_DEATH_ENERGY: true,   // mort par énergie
-    DEBUG_DEATH_AGE: true,      // mort par âge
+    DEBUG_DEATH_ENERGY: false,   // mort par énergie
+    DEBUG_DEATH_AGE: false,      // mort par âge
+    DEBUG_PREDATION: true,      // mort par prédation
 
     // Naissances
     DEBUG_BIRTH_INITIAL: false,

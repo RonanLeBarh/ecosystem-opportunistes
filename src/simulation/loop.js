@@ -165,6 +165,133 @@ export class Simulation {
             }
         }
         this.stats.totalResources = totalResources;
+
+        // --- Carnivorisme moyen ---
+        let totalCarnivore = 0;
+        for (let c of this.creatures) {
+            totalCarnivore += c.genes.carnivore;
+        }
+        this.stats.avgCarnivore = this.creatures.length
+            ? totalCarnivore / this.creatures.length
+            : 0;
+        let herb = 0, omni = 0, carn = 0;
+
+        for (let c of this.creatures) {
+            if (c.genes.carnivore < 0.33) herb++;
+            else if (c.genes.carnivore < 0.66) omni++;
+            else carn++;
+        }
+
+        this.stats.herbivores = herb;
+        this.stats.omnivores = omni;
+        this.stats.carnivores = carn;
+        // --- Moyennes génétiques ---
+        let totalSpeed = 0;
+        let totalVision = 0;
+        let totalMetabolism = 0;
+        let totalFertility = 0;
+        let totalMutation = 0;
+
+        let totalMaxAge = 0;
+
+        // Pour la couleur moyenne
+        let totalR = 0, totalG = 0, totalB = 0;
+
+        for (let c of creatures) {
+            totalSpeed += c.genes.speed;
+            totalVision += c.genes.vision;
+            totalMetabolism += c.genes.metabolism;
+            totalFertility += c.genes.fertility;
+            totalMutation += c.genes.mutationRate;
+
+            totalMaxAge += c.traits.max_age;
+
+            totalR += c.traits.color_r;
+            totalG += c.traits.color_g;
+            totalB += c.traits.color_b;
+        }
+
+        // --- Top 3 couleurs avec tolérance ---
+        const tolerance = CONFIG.COLOR_FAMILY_TOLERANCE;
+        const families = [];
+
+        function distance(c1, c2) {
+            return Math.sqrt(
+                (c1.r - c2.r) ** 2 +
+                (c1.g - c2.g) ** 2 +
+                (c1.b - c2.b) ** 2
+            );
+        }
+
+        for (let c of creatures) {
+            const col = {
+                r: Math.round(c.traits.color_r),
+                g: Math.round(c.traits.color_g),
+                b: Math.round(c.traits.color_b)
+            };
+
+            // Chercher une famille existante proche
+            let found = false;
+            for (let fam of families) {
+                if (distance(col, fam.color) < tolerance) {
+                    fam.count++;
+                    found = true;
+                    break;
+                }
+            }
+
+            // Sinon créer une nouvelle famille
+            if (!found) {
+                families.push({
+                    color: col,
+                    count: 1
+                });
+            }
+        }
+
+        // Trier et prendre le top 3
+        this.stats.topColors = families
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3)
+            .map(f => ({
+                rgb: `rgb(${f.color.r}, ${f.color.g}, ${f.color.b})`,
+                percent: ((f.count / creatures.length) * 100).toFixed(1)
+            }));
+
+
+        const n = creatures.length || 1;
+
+        this.stats.avgSpeed = totalSpeed / n;
+        this.stats.avgVision = totalVision / n;
+        this.stats.avgMetabolism = totalMetabolism / n;
+        this.stats.avgFertility = totalFertility / n;
+        this.stats.avgMutation = totalMutation / n;
+
+        this.stats.avgMaxAge = totalMaxAge / n;
+
+        this.stats.avgColor = {
+            r: totalR / n,
+            g: totalG / n,
+            b: totalB / n
+        };
+        const geneMap = {
+            "Vitesse": this.stats.avgSpeed,
+            "Vision": this.stats.avgVision,
+            "Métabolisme": this.stats.avgMetabolism,
+            "Fertilité": this.stats.avgFertility,
+            "Carnivore": this.stats.avgCarnivore,
+            "Mutation": this.stats.avgMutation
+        };
+
+        this.stats.topGenes = Object.entries(geneMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(([name, value]) => ({
+                name,
+                value: (value * 100).toFixed(1) + "%"
+            }));
+
+
     }
 
 }

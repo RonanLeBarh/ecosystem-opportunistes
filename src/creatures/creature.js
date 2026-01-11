@@ -124,22 +124,28 @@ export class Creature {
 
         if (cell.creature && cell.creature !== this) {
             if (this.genes.carnivore > 0.5) {
-                // tuer la proie
-                cell.creature.dead = true;
-
-                // gagner son énergie
-                this.energy += cell.creature.energy;
+                const prey = cell.creature;
 
                 world.simulation.logger.log("predation", {
                     predator: this.id,
                     prey: cell.creature.id,
+                    predatorCarnivore: this.genes.carnivore,
+                    preyCarnivore: cell.creature.genes.carnivore,
                     cycle: world.simulation.cycle
                 });
+                // gagner son énergie
+                this.energy += cell.creature.energy;
+
+                // Tuer proprement
+                prey.die(world);
 
                 // remplacer la créature dans la cellule
                 cell.creature = this;
+                this.x = newX;
+                this.y = newY;
+
+                return;
             }
-            return;
         }
 
         if (cell.obstacle || cell.creature) {

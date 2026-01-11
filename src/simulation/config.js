@@ -7,7 +7,7 @@ export const CONFIG = {
 
     // --- Ressources ---
     RESOURCE_SPAWN_RATE: 0.05,        // densité initiale (5%)
-    RESOURCE_REGEN_RATE: 0.001,        // régénération par cycle (1%)
+    RESOURCE_REGEN_RATE: 0.08,        // régénération par cycle (1%)
     RESOURCE_ENERGY_VALUE: 20,        // énergie gagnée en mangeant 20
 
     // --- Obstacles ---
@@ -27,13 +27,13 @@ export const CONFIG = {
     COLOR_MUTATION_AMOUNT: 10,        // mutation couleur (0–255)
 
     // --- Simulation ---
-    SIMULATION_SPEED: 2,            // cycles par frame (1 lent → 20 très rapide)
+    SIMULATION_SPEED: 1,            // cycles par frame (1 lent → 20 très rapide)
     SLOW_FACTOR: 5,                  // ralentit uniquement les petites vitesses 5 lent mais fluide 20 ultra lent
 
 
     // --- Reproduction ---
-    REPRODUCTION_ENERGY_THRESHOLD: 80,   // énergie minimale pour se reproduire 80
-    REPRODUCTION_ENERGY_COST: 40,        // coût pour le parent 40
+    REPRODUCTION_ENERGY_THRESHOLD: 800,   // énergie minimale pour se reproduire 80
+    REPRODUCTION_ENERGY_COST: 400,        // coût pour le parent 40
     
     // --- Vision ---
     //VISION_RANGE: 10,                 // portée de vision des créatures
@@ -65,5 +65,8 @@ export const CONFIG = {
         CARNIVORE_MIN: 0,
         CARNIVORE_MAX: 1,
     },
+
+    // Tolérance pour le calcul de la couleur moyenne
+    COLOR_FAMILY_TOLERANCE: 30,
 
 };

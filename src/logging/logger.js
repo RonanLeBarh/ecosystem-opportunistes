@@ -29,6 +29,7 @@ export class Logger {
             "death": "DEBUG_DEATH",
             "death_energy": "DEBUG_DEATH_ENERGY",
             "death_age": "DEBUG_DEATH_AGE",
+            "predation" : "DEBUG_PREDATION",
 
 
             // Population
@@ -55,6 +56,7 @@ export class Logger {
             "death": "Mort",
             "death_energy": "Mort par énergie",
             "death_age": "Mort par âge",
+            "predation" : "Mort par une autre créature",
 
             "population": "Population",
             "cycle": "Cycle",
