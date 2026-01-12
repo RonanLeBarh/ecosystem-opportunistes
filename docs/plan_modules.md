@@ -1,7 +1,7 @@
-# Plan détaillé des modules — Écosystème d’Opportunistes Minimalistes
+# Plan détaillé des modules — Simulateur d’Écosystème Évolutif
 
-Ce document décrit précisément le rôle de chaque fichier du projet.  
-Il sert de guide pour coder proprement, sans ambiguïté, et pour avancer module par module.
+Ce document décrit précisément le rôle de chaque module du projet.  
+Il sert de guide pour maintenir une architecture claire, cohérente et extensible.
 
 ---
 
@@ -9,28 +9,26 @@ Il sert de guide pour coder proprement, sans ambiguïté, et pour avancer module
 
 ## 1.1 world.js
 Responsabilités :
-- Initialiser la grille (tableau 2D)
-- Fournir des méthodes utilitaires :
+- Initialiser la grille 2D
+- Fournir les méthodes :
   - `getCell(x, y)`
-  - `setCreature(x, y, creature)`
+  - `isInside(x, y)`
   - `moveCreature(fromX, fromY, toX, toY)`
   - `addResource(x, y)`
   - `removeResource(x, y)`
-  - `isInside(x, y)`
-  - `isObstacle(x, y)`
-- Gérer les limites du monde
-- Gérer les collisions simples
+- Gérer les collisions et les limites
+- Assurer la cohérence du monde (pas de doublons, pas de fantômes)
 
 ---
 
 ## 1.2 cell.js
 Responsabilités :
-- Représenter une case de la grille
+- Représenter une case du monde
 - Contient :
-  - `resource` (bool ou quantité)
+  - `resource` (bool)
   - `obstacle` (bool)
-  - `creature` (référence ou null)
-- Méthodes simples :
+  - `creature` (référence)
+- Méthodes utilitaires :
   - `isEmpty()`
   - `hasResource()`
   - `hasCreature()`
@@ -45,18 +43,15 @@ Responsabilités :
   - densité initiale
   - taux de régénération
   - valeur énergétique
-- Méthodes :
-  - `spawnInitial(world)`
-  - `regenerate(world)`
+- Influence directe sur la dynamique de population
 
 ---
 
 ## 1.4 obstacles.js
 Responsabilités :
 - Générer des obstacles fixes
-- Créer des zones, murs, couloirs
-- Méthodes :
-  - `generate(world, pattern)`
+- Créer des murs, couloirs ou motifs
+- Influencer les déplacements et stratégies
 
 ---
 
@@ -64,74 +59,56 @@ Responsabilités :
 
 ## 2.1 creature.js
 Responsabilités :
-- Classe principale d’une créature
+- Représenter une créature vivante
 - Contient :
   - position (x, y)
-  - traits génétiques
-  - traits dynamiques
-  - mémoire
+  - traits génétiques (couleur, speed, max_age…)
+  - gènes (vision, carnivore, mutationRate…)
+  - énergie, âge
 - Méthodes :
   - `update(world)`
   - `decide(world)`
-  - `move(world)`
-  - `eat(world)`
-  - `hunt(world)`
-  - `flee(world)`
-  - `reproduce(world)`
-  - `die(world)`
+  - `executeAction(action)`
+  - `moveTowards(target)`
+  - `moveRandom()`
+  - `eat()`
+  - `die()`
+- Gestion propre des déplacements via `world.moveCreature`
 
 ---
 
 ## 2.2 traits.js
 Responsabilités :
 - Générer les traits initiaux
-- Gérer les mutations
-- Gérer la transmission des traits
-- Méthodes :
-  - `createRandomTraits()`
-  - `mutateTraits(parentTraits)`
-  - `inheritTraits(parentTraits)`
+- Gérer les mutations des traits visibles et physiques
+- Hériter des traits du parent
+- Clamp automatique des valeurs (ex : speed entre 1 et 5)
+- Mutation couleur contrôlée par `COLOR_MUTATION_AMOUNT`
 
 ---
 
 ## 2.3 behavior.js
 Responsabilités :
-- Calculer le score interne pour chaque action
-- Pondérer les actions selon :
-  - faim
-  - danger
-  - opportunités
-  - imitation
-  - curiosité
-  - agressivité
-- Méthodes :
-  - `computeActionScores(creature, world)`
-  - `chooseBestAction(scores)`
+- Décider l’action optimale selon :
+  - ressource sur la case
+  - carnivorisme
+  - vision
+  - opportunités proches
+- Recherche de proies
+- Recherche de ressources
+- Déplacements aléatoires
+- Base solide pour un futur comportement avancé
 
 ---
 
 ## 2.4 reproduction.js
 Responsabilités :
-- Vérifier si la créature peut se reproduire
+- Vérifier si une créature peut se reproduire
 - Créer un descendant
-- Appliquer les mutations
+- Appliquer les mutations génétiques
 - Placer le descendant dans une case libre
-- Méthodes :
-  - `canReproduce(creature)`
-  - `createOffspring(creature)`
-  - `placeOffspring(world, creature)`
-
----
-
-## 2.5 memory.js
-Responsabilités :
-- Stocker une mémoire courte :
-  - dernière zone riche
-  - dernier danger
-  - dernier comportement observé
-- Méthodes :
-  - `remember(creature, event)`
-  - `forgetOldEntries(creature)`
+- Gérer le coût énergétique
+- Mutation contrôlée par `mutationRate`
 
 ---
 
@@ -143,77 +120,61 @@ Responsabilités :
   - mise à jour des ressources
   - mise à jour des créatures
   - mort / naissance
+  - nettoyage des cellules
   - logs
-  - stats
-  - rendu visuel
-- Méthodes :
-  - `start()`
-  - `update()`
-  - `step()`
+  - statistiques globales
+  - mise à jour du HUD
+- Calcul des statistiques :
+  - âge moyen
+  - carnivorisme
+  - moyennes génétiques
+  - top 3 gènes
+  - top 3 couleurs (avec tolérance)
+  - ressources restantes
 
 ---
 
-## 3.2 events.js
-Responsabilités :
-- Détecter les événements importants :
-  - extinction de lignée
-  - explosion de population
-  - mutation rare
-  - migration
-  - pénurie de nourriture
-- Méthodes :
-  - `detectEvents(world, creatures)`
-  - `report(event)`
-
----
-
-## 3.3 config.js
+## 3.2 config.js
 Responsabilités :
 - Stocker tous les paramètres globaux :
-  - taille de la grille
+  - taille du monde
   - densité des ressources
   - taux de mutation
-  - coût énergétique
+  - bornes génétiques
+  - reproduction
   - vitesse de simulation
-- Exporter un objet `CONFIG`
+  - tolérance des familles de couleurs
+- Sert de référence unique pour toute la simulation
 
 ---
 
-# 4. /ui — Affichage
+# 4. /ui — Interface utilisateur
 
 ## 4.1 renderer.js
 Responsabilités :
 - Dessiner la grille
-- Dessiner les créatures
+- Dessiner les créatures (carrés colorés)
 - Dessiner les ressources
 - Dessiner les obstacles
-- Méthodes :
-  - `draw(world, creatures)`
-  - `drawCreature(creature)`
-  - `drawResource(x, y)`
-  - `drawObstacle(x, y)`
+- Gérer la taille du canvas
 
 ---
 
-## 4.2 colors.js
+## 4.2 hud.js
 Responsabilités :
-- Convertir les traits génétiques en couleur
-- Gérer les variations visuelles
-- Méthodes :
-  - `traitsToColor(traits)`
-  - `mutateColor(traits)`
-
----
-
-## 4.3 controls.js
-Responsabilités :
-- Pause / reprise
-- Vitesse de simulation
-- Zoom (optionnel)
-- Sélection d’une créature (optionnel)
-- Méthodes :
-  - `togglePause()`
-  - `setSpeed(value)`
+- Afficher les statistiques globales :
+  - population
+  - âge moyen
+  - morts énergie / âge
+  - naissances
+  - cycle
+  - ressources restantes
+  - carnivorisme
+  - moyennes génétiques
+  - top 3 gènes
+  - top 3 couleurs (avec carrés RGB)
+  - couleur moyenne
+- Mise à jour automatique à chaque cycle
 
 ---
 
@@ -221,42 +182,50 @@ Responsabilités :
 
 ## 5.1 logger.js
 Responsabilités :
-- Enregistrer les événements importants
-- Format texte simple
-- Méthodes :
-  - `log(eventType, data)`
-  - `exportLog()`
-
----
-
-## 5.2 stats.js
-Responsabilités :
-- Calculer les statistiques globales :
+- Enregistrer les événements importants :
+  - déplacements
+  - décisions
+  - vision
+  - reproduction
+  - mort (énergie, âge, prédation)
   - population
-  - âge moyen
-  - énergie moyenne
-  - distributions des traits
-  - diversité génétique
-- Méthodes :
-  - `update(creatures)`
-  - `getStats()`
+  - cycle
+- Filtrage par type de log
+- Filtrage par creatureId
+- Labels français
+- Avertissement pour type inconnu
 
 ---
 
-## 5.3 summarizer.js
-Responsabilités :
-- Générer un résumé final :
-  - lignées dominantes
-  - stratégies observées
-  - événements marquants
-  - évolution des traits
-- Méthodes :
-  - `generateSummary(log, stats)`
+# 6. Modules futurs (préparés par l’architecture)
+
+## 6.1 Behavior avancé
+- Score d’action
+- Fuite
+- Agressivité
+- Curiosité
+- Imitation
+- Mémoire locale
+
+## 6.2 Événements dynamiques
+- pénuries
+- zones riches
+- migrations
+- extinctions de lignées
+
+## 6.3 HUD avancé
+- graphiques d’évolution
+- mini-map
+- sélection de créature
+
+## 6.4 Export & analyse
+- export JSON
+- résumé automatique
+- analyse narrative
 
 ---
 
-# 6. Conclusion
+# 7. Conclusion
 
-Ce plan de modules sert de guide pour coder proprement, sans confusion.  
-Chaque fichier a une responsabilité claire.  
-On pourra avancer module par module, en commençant par le moteur du monde.
+Ce document décrit précisément la structure du projet et les responsabilités de chaque module.  
+Il est synchronisé avec l’état actuel du code et sert de référence pour les futures évolutions.

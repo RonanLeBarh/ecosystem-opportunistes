@@ -1,300 +1,222 @@
-# Écosystème d’Opportunistes Minimalistes — Requirements
+# Requirements — Simulateur d’Écosystème Évolutif
 
 ## 1. Objectif du projet
 
-Créer une simulation 2D minimaliste où des créatures pixelisées (carrés colorés) évoluent dans un environnement avec ressources et obstacles.  
-Chaque créature possède des traits génétiques qui influencent son comportement (chasse, cueillette, agressivité, curiosité, durée de vie, etc.), et ces traits se transmettent avec mutations légères.  
-L’objectif est d’observer l’émergence de comportements complexes (stratégies, lignées dominantes, extinctions, migrations) à partir de règles simples.
+Créer un simulateur d’écosystème 2D où des créatures pixelisées évoluent dans un environnement dynamique.  
+Chaque créature possède des traits génétiques (couleur, vitesse, vision, métabolisme, fertilité, carnivorisme…) qui mutent légèrement à chaque génération.
 
-La simulation doit être :
+Le but est d’observer l’émergence de comportements naturels :
+- lignées dominantes
+- clusters de couleurs
+- stratégies de survie
+- cycles proies/prédateurs
+- extinctions et expansions
+
+Le simulateur doit être :
 - lisible visuellement
-- simple à comprendre
-- modulaire et maintenable
-- 100 % locale et gratuite
-- compatible avec une analyse textuelle (logs + résumé)
+- modulaire
+- performant
+- évolutif
+- entièrement local
 
 ---
 
-## 2. Vue d’ensemble de la simulation
+# 2. Vue d’ensemble
 
-- Monde 2D avec grille de taille configurable (par exemple 100x100 cases).
-- Chaque case peut contenir :
-  - une ressource (nourriture)
-  - un obstacle
-  - une créature
-  - ou être vide
-
-- Temps discret en **cycles** (“ticks”).
-- À chaque cycle :
-  - les créatures prennent une décision
-  - les ressources se régénèrent partiellement
-  - l’âge des créatures augmente
-  - les événements importants sont loggés
-
----
-
-## 3. Les créatures
-
-### 3.1 Représentation
-
-- Chaque créature est représentée par un **carré coloré** sur la grille.
-- La **couleur** reflète certains traits génétiques (ex : combinaison de préférences ou de lignées).
-- Une créature occupe une seule case à la fois.
-
-### 3.2 Traits génétiques
-
-Chaque créature possède des traits numériques, transmis aux descendants avec petites mutations :
-
-- Traits visibles :
-  - `color_r` : composante rouge (0–255)
-  - `color_g` : composante verte (0–255)
-  - `color_b` : composante bleue (0–255)
-
-- Traits comportementaux :
-  - `gathering_preference` : préférence pour la cueillette (0–1)
-  - `hunting_preference` : préférence pour la chasse (0–1)
-  - `aggressiveness` : tendance à attaquer en cas de manque ou d’opportunité (0–1)
-  - `curiosity` : tendance à explorer de nouvelles zones (0–1)
-  - `fear` : tendance à fuir les dangers / groupes hostiles (0–1)
-
-- Traits physiques :
-  - `speed` : nombre de cases max par cycle (souvent 1, avec variations possibles)
-  - `efficiency` : quantité d’énergie gagnée ou perdue lors des actions (0–1)
-  - `max_age` : durée de vie maximale en cycles
-
-- Traits dynamiques (non héréditaires) :
-  - `energy` : énergie actuelle
-  - `age` : âge en cycles
-  - mémoire locale simple (ex : dernière zone riche, dernier danger)
-
-### 3.3 Besoins et limites
-
-- Une créature **meurt** si :
-  - `energy <= 0`
-  - ou `age >= max_age`
-
-- Une créature peut **se reproduire** si :
-  - `energy` dépasse un seuil configurable
-  - et éventuellement si certaines conditions environnementales sont réunies (optionnel au début)
-
----
-
-## 4. Comportement des créatures
-
-### 4.1 Actions possibles par cycle
-
-À chaque cycle, une créature peut :
-
-- **Se déplacer** :
-  - vers une case voisine (ou rester sur place)
-  - en tenant compte des obstacles
-
-- **Manger** :
-  - une ressource présente sur sa case
-  - ou une autre créature (chasse) si les conditions sont réunies
-
-- **Fuir** :
-  - s’éloigner d’une zone jugée dangereuse (prédateurs, agressivité élevée)
-
-- **Explorer** :
-  - se diriger vers une zone inconnue ou peu fréquentée, influencée par `curiosity`
-
-- **Imiter** :
-  - copier un comportement observé chez une créature proche ayant eu récemment du succès (gain d’énergie, survie)
-
-- **Se reproduire** :
-  - créer un descendant sur une case disponible proche
-  - transmettre les traits avec petites variations (mutations)
-
-### 4.2 Décision
-
-La décision est prise via un **score interne** basé sur :
-
-- état interne (énergie, faim, âge)
-- traits (chasse, cueillette, agressivité, curiosité, peur)
-- informations locales (présence de ressources, créatures proches, dangers)
-- éventuellement mémoire courte
-
-La créature choisit l’action qui maximise ce score (ou via une probabilité pondérée).
-
----
-
-## 5. Environnement
-
-### 5.1 Grille
-
-- Grille 2D de taille configurable.
-- Les cases peuvent être :
-  - `empty` : vide
-  - `resource` : contient de la nourriture
-  - `obstacle` : bloc infranchissable
-  - `creature` : occupée par une créature
-
-### 5.2 Ressources
-
-- Les ressources :
-  - apparaissent initialement selon une distribution (aléatoire, zones riches, etc.)
-  - se **régénèrent** au fil des cycles (taux configurable)
-  - sont consommées par les créatures pour gagner de l’énergie
-
-- Paramètres :
-  - taux de régénération
-  - densité initiale
-  - valeur énergétique par ressource
-
-### 5.3 Obstacles
-
-- Certaines cases sont des obstacles :
-  - non traversables
-  - influencent les chemins possibles
-  - créent des “zones” et des goulots d’étranglement
-
----
-
-## 6. Reproduction et mutations
-
-### 6.1 Reproduction
-
-- Quand une créature atteint un certain seuil d’énergie :
-  - elle peut créer un descendant
-  - l’énergie est partagée ou réduite (à définir précisément)
-  - le descendant apparaît sur une case voisine libre (si possible)
-
-### 6.2 Mutations
-
-- À chaque reproduction :
-  - certains traits peuvent varier légèrement (petit + ou − aléatoire)
-  - éventuellement avec une probabilité de mutation par trait
-
-- Effet attendu :
-  - apparition de nouvelles lignées
-  - diversification des stratégies
-  - émergence de “familles” visuellement identifiables par leur couleur
-
----
-
-## 7. Agressivité contextuelle
-
-- L’agressivité d’une créature dépend :
-  - de son trait génétique `aggressiveness`
-  - de son niveau d’énergie (plus elle est en manque, plus elle peut devenir dangereuse)
-  - de la densité de créatures autour (compétition)
-
-- Comportements potentiels :
-  - chasse d’autres créatures faibles
-  - attaque opportuniste si la proie est isolée
-  - fuite si peur > agressivité perçue
-
----
-
-## 8. Boucle de simulation
+Le monde est une grille 2D.  
+Chaque case peut contenir :
+- une ressource
+- un obstacle
+- une créature
+- ou être vide
 
 À chaque cycle :
-
-1. Mettre à jour les ressources (régénération).
-2. Pour chaque créature (dans un ordre défini ou aléatoire) :
-   - augmenter l’âge
-   - diminuer l’énergie de base (coût de maintenance)
-   - décider d’une action
-   - exécuter l’action (déplacement, manger, chasser, fuir, reproduire, etc.)
-   - mettre à jour l’énergie
-   - vérifier la mort éventuelle
-
-3. Mettre à jour les statistiques globales.
-4. Enregistrer les événements importants dans le log.
-5. Rafraîchir l’affichage visuel.
+1. Les ressources se régénèrent  
+2. Les créatures prennent une décision  
+3. Elles se déplacent, mangent, chassent ou se reproduisent  
+4. Elles vieillissent et peuvent mourir  
+5. Les statistiques globales sont mises à jour  
+6. Le HUD affiche l’état du monde  
 
 ---
 
-## 9. Affichage / interface
+# 3. Les créatures
 
-- Affichage 2D minimaliste (type grille) :
-  - chaque case = pixel ou petit carré
-  - créatures = carrés colorés
-  - obstacles = couleur fixe (ex : gris)
-  - ressources = couleur spécifique (ex : vert)
+## 3.1 Représentation
+- Un carré coloré sur la grille
+- La couleur reflète la lignée (avec tolérance pour regrouper les familles proches)
+- Une créature occupe une seule case
 
-- Possibilités d’affichage :
-  - vitesse de simulation ajustable
-  - pause / reprise
-  - zoom (optionnel à définir plus tard)
-  - survol / clic pour voir les traits d’une créature (optionnel plus tard)
+## 3.2 Traits génétiques (hérités + mutation)
+- `color_r`, `color_g`, `color_b` (0–255)
+- `speed` (1–5)
+- `max_age` (200–600)
+- `gathering_preference`
+- `hunting_preference`
+- `aggressiveness`
+- `curiosity`
+- `fear`
+
+## 3.3 Gènes (hérités + mutation)
+- `vision` (1–10)
+- `metabolism` (0.2–3)
+- `fertility` (0.1–1)
+- `mutationRate` (0.05–0.3)
+- `carnivore` (0–1)
+
+## 3.4 Besoins et limites
+Une créature meurt si :
+- son énergie tombe à 0  
+- son âge dépasse `max_age`  
+
+Une créature peut se reproduire si :
+- son énergie dépasse un seuil configurable  
+- une case libre est disponible autour d’elle  
 
 ---
 
-## 10. Système de logs et d’histoire
+# 4. Comportement des créatures
 
-### 10.1 Log des événements
+## 4.1 Actions possibles
+- se déplacer (aléatoire ou dirigé)
+- manger une ressource
+- chasser une autre créature
+- se reproduire
+- rester sur place (si bloquée)
 
-Le système doit enregistrer dans un fichier texte ou en mémoire :
+## 4.2 Décision
+Le comportement actuel suit cet ordre :
+1. Si ressource sur la case → manger  
+2. Si carnivore → chercher une proie  
+3. Chercher une ressource dans le champ de vision  
+4. Sinon → déplacement aléatoire  
 
-- naissance de créatures
-- mort de créatures
-- mutations significatives (ex : changement important d’un trait)
-- apparition de nouvelles “lignées” (familles de couleur/traits proches)
-- extinction de lignées
-- pénuries de nourriture
-- pics d’agressivité
-- migrations (déplacements de groupes vers une zone)
-- changements brusques dans la population (explosion ou effondrement)
+## 4.3 Vision
+- Vision carrée autour de la créature
+- Recherche de la ressource la plus proche
+- Recherche de la proie la plus proche
 
-Chaque entrée comprend :
-- cycle
-- type d’événement
-- informations contextuelles (traits moyens, position, etc.)
+---
 
-### 10.2 Statistiques globales
+# 5. Environnement
 
-En parallèle, calcul de statistiques globales sur la population :
+## 5.1 Grille
+- Taille configurable (100×100 par défaut)
+- Chaque case est un objet `Cell`
 
-- taille de la population
+## 5.2 Ressources
+- Génération initiale selon densité
+- Régénération à chaque cycle
+- Valeur énergétique configurable
+
+## 5.3 Obstacles
+- Cases infranchissables
+- Peuvent former des murs ou motifs
+
+---
+
+# 6. Reproduction et mutations
+
+## 6.1 Reproduction
+- Seuil d’énergie configurable
+- Coût énergétique configurable
+- Descendant placé sur une case libre adjacente
+- Traits hérités + mutation légère
+
+## 6.2 Mutations
+- Mutation des traits physiques (speed, max_age…)
+- Mutation des couleurs
+- Mutation des gènes (vision, carnivore, metabolism…)
+- Mutation contrôlée par `mutationRate`
+
+---
+
+# 7. HUD et interface
+
+## 7.1 HUD global
+Affiche :
+- population
 - âge moyen
-- énergie moyenne
-- distributions des traits (moyenne, min, max)
-- diversité génétique (à définir de manière simple)
-- répartition des “préférences” (chasse vs cueillette)
+- morts énergie / âge
+- naissances (initiales / reproduction)
+- cycle
+- ressources restantes
+- carnivorisme (moyenne + répartition)
+- moyennes génétiques
+- top 3 gènes dominants
+- top 3 couleurs (avec tolérance)
+- couleur moyenne (carré RGB)
 
-### 10.3 Résumé final
-
-À la fin d’une simulation (ou sur demande), génération d’un résumé textuel :
-
-- durée de la simulation (en cycles)
-- évolution de la population (début vs fin)
-- traits dominants apparus
-- stratégies majoritaires (chasse, cueillette, mixte)
-- événements marquants (familles dominantes, extinctions, pénuries)
-- commentaire textuel prêt à être donné à une IA pour analyse ou narration
-
----
-
-## 11. Objectifs non fonctionnels
-
-- Code modulaire, lisible, bien commenté.
-- Architecture suffisamment claire pour être étendue par la suite.
-- Pas de dépendances inutiles.
-- Capable de tourner sur une machine standard sans GPU particulier.
-- Temps réel raisonnable pour une grille moyenne (ex : 100x100, quelques centaines de créatures).
+## 7.2 Contrôles
+- Pause / reprise
+- Reset
+- Vitesse de simulation (slider)
 
 ---
 
-## 12. Scope initial vs évolutions futures
+# 8. Logging
 
-### Scope initial (version 0.1)
+## 8.1 Événements loggés
+- déplacements
+- décisions
+- vision
+- reproduction
+- mort (énergie, âge, prédation)
+- population
+- cycle
 
-- Grille 2D avec ressources et obstacles.
-- Créatures avec traits génétiques de base.
-- Décision simple par score interne.
-- Reproduction + mutations légères.
-- Mort par âge ou énergie.
-- Affichage minimaliste.
-- Log des événements principaux.
-- Résumé final simple.
+## 8.2 Fonctionnalités
+- filtrage par type
+- filtrage par creatureId
+- labels français
+- avertissement pour type inconnu
 
-### Évolutions possibles (plus tard)
+---
 
-- Mémoire plus avancée.
-- Stratégies de groupe.
-- Événements environnementaux (catastrophes, saisons).
-- Interface plus riche.
-- Contrôles interactifs plus poussés.
-- Export et analyse automatique via IA externe.
+# 9. Statistiques globales
+
+Calculées à chaque cycle :
+- âge moyen
+- carnivorisme moyen
+- répartition herbivore / omnivore / carnivore
+- moyennes génétiques
+- top 3 gènes dominants
+- top 3 couleurs (avec tolérance)
+- ressources restantes
+
+---
+
+# 10. Objectifs non fonctionnels
+
+- Code modulaire et lisible
+- Architecture extensible
+- Performance correcte pour 100×100 cases
+- Simulation fluide en temps réel
+- Aucun framework externe
+
+---
+
+# 11. Roadmap (synchronisée avec PLAN.md)
+
+## Version actuelle : **0.4**
+- Moteur complet
+- Génétique évolutive
+- HUD avancé
+- Prédation
+- Stats globales
+- Top couleurs et gènes
+
+## Prochaines versions
+- 0.5 : Behavior avancé (fuite, agressivité, curiosité)
+- 0.6 : Mémoire locale + imitation
+- 0.7 : Événements dynamiques
+- 0.8 : HUD graphique + mini-map
+- 0.9 : Export / résumé / analyse
+- 1.0 : Version stable
+
+---
+
+# 12. Conclusion
+
+Ce document décrit précisément les besoins fonctionnels et techniques du simulateur.  
+Il est aligné avec l’état actuel du projet et sert de référence pour les futures évolutions.

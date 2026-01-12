@@ -1,22 +1,23 @@
-# Architecture Technique — Écosystème d’Opportunistes Minimalistes
+# Architecture Technique — Simulateur d’Écosystème Évolutif
 
 ## 1. Vue d’ensemble
 
-Le projet est structuré en modules indépendants et lisibles.  
-Chaque module a une responsabilité claire.  
-L’objectif est de permettre une évolution simple du code sans créer de dépendances complexes.
+Le projet est structuré en modules indépendants, lisibles et extensibles.  
+Chaque fichier a une responsabilité claire, ce qui permet d’ajouter de nouvelles fonctionnalités sans casser l’existant.
 
 L’architecture repose sur 5 grands blocs :
 
-1. **Engine** — moteur du monde (grille, ressources, obstacles)
+1. **Engine** — moteur du monde (grille, cellules, ressources, obstacles)
 2. **Creatures** — moteur des créatures (traits, comportement, reproduction)
-3. **Simulation** — boucle principale, mise à jour, gestion du temps
-4. **UI** — affichage 2D minimaliste (canvas)
-5. **Logging** — journalisation, statistiques, résumé final
+3. **Simulation** — boucle principale, stats, logs
+4. **UI** — affichage 2D + HUD
+5. **Logging** — journalisation et statistiques globales
+
+Cette architecture est **cohérente avec le code actuel** et **compatible avec les futures évolutions**.
 
 ---
 
-## 2. Structure des dossiers
+# 2. Structure des dossiers
 
 /src
 /engine
@@ -30,242 +31,241 @@ creature.js
 traits.js
 behavior.js
 reproduction.js
-memory.js
 
 /simulation
 loop.js
-events.js
 config.js
 
 /ui
 renderer.js
-colors.js
-controls.js
+hud.js
 
 /logging
 logger.js
-stats.js
-summarizer.js
+
+main.js
+style.css
 
 ---
 
-## 3. Description des modules
+# 3. Description détaillée des modules
 
-### 3.1 /engine
+## 3.1 /engine — Moteur du monde
 
-#### **world.js**
-- Initialise la grille
-- Stocke les cases
-- Fournit des méthodes :
+### **world.js**
+Responsabilités :
+- Initialise la grille 2D
+- Fournit les méthodes :
   - `getCell(x, y)`
-  - `setCreature(x, y, creature)`
-  - `moveCreature(from, to)`
+  - `isInside(x, y)`
+  - `moveCreature(fromX, fromY, toX, toY)`
   - `addResource(x, y)`
-  - `isObstacle(x, y)`
-- Gère les limites du monde
+  - `removeResource(x, y)`
+- Gère les collisions et les limites
+- Sert de base à toutes les interactions
 
-#### **cell.js**
-- Représente une case de la grille
-- Peut contenir :
-  - ressource
-  - obstacle
-  - créature
-  - vide
+### **cell.js**
+Responsabilités :
+- Représente une case du monde
+- Contient :
+  - `resource` (bool)
+  - `obstacle` (bool)
+  - `creature` (référence)
+- Méthodes utilitaires :
+  - `isEmpty()`
+  - `hasResource()`
+  - `hasCreature()`
 
-#### **resources.js**
-- Gère :
+### **resources.js**
+Responsabilités :
+- Génère les ressources initiales
+- Régénère les ressources à chaque cycle
+- Paramètres :
   - densité initiale
-  - régénération
+  - taux de régénération
   - valeur énergétique
-- Méthodes :
-  - `spawnResources()`
-  - `regenerate()`
 
-#### **obstacles.js**
+### **obstacles.js**
+Responsabilités :
 - Génère des obstacles fixes
-- Peut créer des zones, murs, couloirs
+- Peut créer des murs ou motifs
+- Influence les déplacements et stratégies
 
 ---
 
-### 3.2 /creatures
+## 3.2 /creatures — Moteur des créatures
 
-#### **creature.js**
-- Classe principale d’une créature
+### **creature.js**
+Responsabilités :
+- Représente une créature vivante
 - Contient :
-  - traits génétiques
-  - traits dynamiques
-  - position
-  - énergie
-  - âge
-  - mémoire
+  - position (x, y)
+  - traits génétiques (couleur, speed, max_age…)
+  - gènes (vision, carnivore, mutationRate…)
+  - énergie, âge
 - Méthodes :
-  - `update()`
-  - `decide()`
-  - `move()`
+  - `update(world)`
+  - `decide(world)`
+  - `executeAction(action)`
+  - `moveTowards(target)`
+  - `moveRandom()`
   - `eat()`
-  - `hunt()`
-  - `flee()`
-  - `reproduce()`
   - `die()`
 
-#### **traits.js**
-- Initialise les traits génétiques
-- Gère les mutations
-- Gère la transmission des traits
+### **traits.js**
+Responsabilités :
+- Générer les traits initiaux
+- Gérer les mutations des traits visibles et physiques
+- Hériter des traits du parent
+- Clamp automatique des valeurs (ex : speed entre 1 et 5)
 
-#### **behavior.js**
-- Calcule le score interne
-- Détermine l’action optimale
-- Prend en compte :
-  - faim
-  - danger
-  - opportunités
-  - imitation
-  - curiosité
-  - agressivité
+### **behavior.js**
+Responsabilités :
+- Décider l’action optimale :
+  - manger si ressource
+  - chasser si carnivore
+  - chercher ressource
+  - déplacement aléatoire
+- Vision locale
+- Recherche de proies
+- Recherche de ressources
 
-#### **reproduction.js**
-- Gère :
-  - conditions de reproduction
-  - création du descendant
-  - mutation des traits
-  - placement du nouveau-né
-
-#### **memory.js**
-- Mémoire courte :
-  - dernière zone riche
-  - dernier danger
-  - dernier comportement observé
+### **reproduction.js**
+Responsabilités :
+- Vérifier si une créature peut se reproduire
+- Créer un descendant
+- Appliquer les mutations génétiques
+- Placer le descendant dans une case libre
+- Gérer le coût énergétique
 
 ---
 
-### 3.3 /simulation
+## 3.3 /simulation — Boucle principale
 
-#### **loop.js**
-- Boucle principale :
+### **loop.js**
+Responsabilités :
+- Boucle de simulation :
   - mise à jour des ressources
   - mise à jour des créatures
   - mort / naissance
+  - nettoyage des cellules
   - logs
-  - stats
-  - rendu visuel
+  - statistiques globales
+  - mise à jour du HUD
+- Calcul des statistiques :
+  - âge moyen
+  - carnivorisme
+  - moyennes génétiques
+  - top 3 gènes
+  - top 3 couleurs (avec tolérance)
+  - ressources restantes
 
-#### **events.js**
-- Détecte les événements importants :
-  - extinction de lignée
-  - explosion de population
-  - mutation rare
-  - migration
-  - pénurie de nourriture
-
-#### **config.js**
+### **config.js**
+Responsabilités :
 - Paramètres globaux :
-  - taille de la grille
+  - taille du monde
   - densité des ressources
   - taux de mutation
-  - coût énergétique
+  - bornes génétiques
   - vitesse de simulation
+  - reproduction
+  - tolérance des familles de couleurs
 
 ---
 
-### 3.4 /ui
+## 3.4 /ui — Interface utilisateur
 
-#### **renderer.js**
-- Dessine la grille
-- Dessine les créatures (carrés colorés)
-- Dessine les ressources
-- Dessine les obstacles
+### **renderer.js**
+Responsabilités :
+- Dessiner la grille
+- Dessiner les créatures (carrés colorés)
+- Dessiner les ressources
+- Dessiner les obstacles
+- Gérer la taille du canvas
 
-#### **colors.js**
-- Convertit les traits génétiques en couleur
-- Gère les variations visuelles
-
-#### **controls.js**
-- Pause / reprise
-- Vitesse de simulation
-- Zoom (optionnel)
-- Sélection d’une créature (optionnel)
-
----
-
-### 3.5 /logging
-
-#### **logger.js**
-- Enregistre :
-  - naissances
-  - morts
-  - mutations
-  - événements majeurs
-- Format texte simple
-
-#### **stats.js**
-- Calcule :
+### **hud.js**
+Responsabilités :
+- Afficher les statistiques globales :
   - population
   - âge moyen
-  - énergie moyenne
-  - distributions des traits
-  - diversité génétique
-
-#### **summarizer.js**
-- Génère un résumé final :
-  - lignées dominantes
-  - stratégies observées
-  - événements marquants
-  - évolution des traits
-  - analyse narrative
+  - morts énergie / âge
+  - naissances
+  - cycle
+  - ressources restantes
+  - carnivorisme
+  - moyennes génétiques
+  - top 3 gènes
+  - top 3 couleurs (avec carrés RGB)
+- Mise à jour automatique à chaque cycle
 
 ---
 
-## 4. Flux de données
+## 3.5 /logging — Journalisation
 
-### 1. La simulation appelle :
-- `world.updateResources()`
-- `creature.update()`
-- `logger.log()`
-- `stats.update()`
-- `renderer.draw()`
-
-### 2. Les créatures lisent :
-- l’état du monde
-- les cases voisines
-- leur mémoire
-- leurs traits
-
-### 3. Les créatures écrivent :
-- leur nouvelle position
-- leur énergie
-- leur âge
-- leurs descendants
-
-### 4. Le logger écrit :
-- dans un buffer texte
-- dans un fichier (optionnel plus tard)
+### **logger.js**
+Responsabilités :
+- Enregistrer les événements importants :
+  - déplacements
+  - décisions
+  - vision
+  - reproduction
+  - mort (énergie, âge, prédation)
+  - population
+  - cycle
+- Filtrage par type de log
+- Filtrage par creatureId
+- Labels français
+- Avertissement pour type inconnu
 
 ---
 
-## 5. Évolutivité
+# 4. Flux de données
 
-L’architecture permet d’ajouter facilement :
+1. **Simulation.step()** :
+   - met à jour les ressources
+   - met à jour chaque créature
+   - nettoie les morts
+   - calcule les stats
+   - met à jour le HUD
 
-- nouvelles actions
-- nouveaux traits
-- nouveaux types de ressources
-- météo / saisons
-- IA plus avancée
-- interface plus riche
+2. **Renderer.draw()** :
+   - dessine le monde à chaque frame
+
+3. **HUD.update()** :
+   - affiche les stats en temps réel
+
+4. **Logger.log()** :
+   - enregistre les événements
+
+---
+
+# 5. Points d’extension prévus
+
+L’architecture actuelle permet d’ajouter facilement :
+
+- comportement avancé (fuite, agressivité, curiosité)
+- mémoire locale
+- événements dynamiques
+- mini-map
+- graphiques HUD
 - export JSON
-- analyse automatique par IA
+- résumé automatique
+- sélection de créature
+
+Aucune refonte n’est nécessaire :  
+👉 l’architecture est déjà prête pour la suite.
 
 ---
 
-## 6. Conclusion
+# 6. Conclusion
 
 Cette architecture est :
-- simple
-- modulaire
-- maintenable
-- évolutive
-- adaptée à ton style de travail
-- parfaite pour un projet émergent
 
-Elle te permettra d’ajouter des fonctionnalités sans casser le reste du code.
+- simple  
+- modulaire  
+- maintenable  
+- évolutive  
+- parfaitement alignée avec le code actuel  
+- prête pour les futures fonctionnalités  
+
+Elle constitue une base solide pour un simulateur d’écosystème évolutif complet.

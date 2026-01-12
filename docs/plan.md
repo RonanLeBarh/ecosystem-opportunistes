@@ -1,184 +1,177 @@
-PLAN.md — Architecture & Roadmap du Simulateur d’Écosystème
-🧭 Objectif général
-Construire un simulateur d’écosystème vivant, lisible, modulaire et extensible, avec un logger professionnel, un HUD global, une IA comportementale évolutive, et une interface claire permettant d’observer l’évolution du monde et des créatures.
+# PLAN.md — Architecture & Roadmap du Simulateur d’Écosystème
+
+## 🧭 Objectif général
+Créer un simulateur d’écosystème minimaliste mais évolutif, où des créatures pixelisées interagissent dans un monde 2D.  
+Chaque créature possède des traits génétiques (couleur, vitesse, vision, métabolisme, fertilité, carnivorisme, etc.) qui mutent légèrement à chaque génération.
+
+L’objectif est d’observer l’émergence de comportements naturels :
+- lignées dominantes
+- clusters de couleurs
+- stratégies de survie
+- cycles proies/prédateurs
+- extinctions et expansions
+
+Le tout avec un HUD clair, un logger modulaire, et une architecture propre.
+
+---
+
+# 🧩 1. Modules terminés (100 % fonctionnels)
+
+## ✔ 1.1 Logger modulaire
+- Filtrage par type de log
+- Filtrage par creatureId
+- Labels français
+- Avertissement pour type inconnu
+- Logs propres pour :
+  - déplacements
+  - décisions
+  - vision
+  - reproduction
+  - mort (énergie, âge, prédation)
+  - population
+  - cycle
+
+## ✔ 1.2 Moteur du monde
+- Grille 2D
+- Cellules avec ressource / obstacle / créature
+- Déplacements sécurisés via `world.moveCreature`
+- Gestion des limites
+- Nettoyage des morts
+
+## ✔ 1.3 Créatures
+- Traits génétiques complets
+- Mutations contrôlées
+- Vitesse mutante (trait)
+- Couleur mutante (avec tolérance pour familles)
+- Carnivorisme fonctionnel
+- Mort propre
+- Reproduction évolutive
+
+## ✔ 1.4 Behavior simple
+- Priorité ressource
+- Priorité chasse si carnivore
+- Vision fonctionnelle
+- Déplacements cohérents
+
+## ✔ 1.5 Ressources
+- Génération initiale
+- Régénération dynamique
+- Consommation
+
+## ✔ 1.6 HUD complet
+- Population
+- Âge moyen
+- Morts énergie / âge
+- Naissances
+- Cycle
+- Ressources restantes
+- Carnivorisme (moyenne + répartition)
+- Moyennes génétiques
+- Top 3 gènes dominants
+- Top 3 couleurs (avec tolérance)
+- Couleur moyenne (carré RGB)
+
+## ✔ 1.7 Renderer
+- Affichage grille
+- Créatures colorées
+- Ressources
+- Obstacles
+
+---
+
+# 🧩 2. Modules en cours (partiellement implémentés)
+
+## 🔄 2.1 Behavior évolutif
+- Chasse fonctionnelle
+- Recherche de ressource OK
+- Déplacements OK
+- Manque encore :
+  - fuite
+  - agressivité
+  - curiosité
+  - imitation
+  - score d’action
+
+## 🔄 2.2 Génétique avancée
+- Mutations OK
+- Bornes OK
+- Manque encore :
+  - mutation comportementale pondérée
+  - interactions entre traits
+
+## 🔄 2.3 Diversité visuelle
+- Top 3 couleurs OK
+- Tolérance OK
+- Manque encore :
+  - suivi des familles dans le temps
+  - mini-map des clusters
 
-🧩 Module 1 — Logger propre et configurable (TERMINÉ)
-🎯 Objectifs
-Avoir un système de logs lisible, filtrable, modulaire.
+---
 
-Pouvoir suivre une créature précise.
+# 🧩 3. Modules à venir (prochaines étapes)
 
-Pouvoir activer/désactiver chaque type de log individuellement.
+## ⏳ 3.1 Behavior avancé
+- Système de score interne
+- Pondération par faim / danger / opportunité
+- Fuite des prédateurs
+- Agressivité contextuelle
+- Exploration intelligente
+- Mémoire locale (dernière ressource, dernier danger)
 
-Avoir des labels français.
+## ⏳ 3.2 Événements dynamiques
+- Pénuries
+- Zones riches
+- Migrations
+- Extinctions de lignées
+- Explosion de population
 
-Avertir en cas de type inconnu.
+## ⏳ 3.3 HUD avancé
+- Graphiques d’évolution (population, carnivorisme, vitesse)
+- Mini-map
+- Sélection d’une créature (fiche détaillée)
 
-✔ Réalisé
-Filtrage par creatureId, parentId, childId.
+## ⏳ 3.4 Logging avancé
+- Export JSON
+- Résumé automatique
+- Détection d’événements
+- Analyse narrative
 
-Sous‑flags pour mouvements (move_towards, move_random, move_blocked).
+---
 
-Logs propres pour : vision, décision, énergie, reproduction, mort, population, cycle.
+# 🧩 4. Alignement avec la vision globale
 
-Distinction mort par énergie / mort par âge.
+Le projet est actuellement en **version 0.4** :
 
-Avertissement automatique pour type inconnu.
+- Le moteur est stable  
+- Les créatures évoluent réellement  
+- Les lignées apparaissent  
+- Le HUD donne une vision claire  
+- Le logger est professionnel  
+- L’architecture est propre et modulaire  
 
-Zéro ambiguïté, zéro bruit.
+Les prochaines étapes (behavior avancé + mémoire + agressivité + événements) s’intègrent parfaitement dans la structure actuelle.
 
-🧩 Module 2 — Behavior avancé (À FAIRE)
-🎯 Objectifs
-Créer un comportement plus réaliste, plus intelligent, plus émergent.
+Aucune dérive, aucune incohérence :  
+👉 le projet est parfaitement aligné avec la vision initiale.
 
-🔧 Sous‑modules
-Vision intelligente (champ de vision, priorité des cibles).
+---
 
-Mémoire locale (dernière ressource vue, dernier danger).
+# 🧩 5. Roadmap synthétique
 
-Priorités dynamiques (faim, reproduction, exploration).
+| Version | Contenu |
+|--------|---------|
+| **0.4 (actuel)** | Moteur complet, génétique, HUD, prédation, stats |
+| **0.5** | Behavior avancé (fuite, agressivité, curiosité) |
+| **0.6** | Mémoire locale + imitation |
+| **0.7** | Événements dynamiques |
+| **0.8** | HUD graphique + mini-map |
+| **0.9** | Export / résumé / analyse |
+| **1.0** | Version stable, écosystème complet |
 
-Évitement d’obstacles.
+---
 
-Recherche de ressources optimisée.
+# 🧩 6. Conclusion
 
-Décisions pondérées (probabilités, traits génétiques).
+Le projet est propre, stable, cohérent et prêt pour les prochaines étapes.  
+Ce document sert désormais de référence officielle pour la suite du développement.
 
-🧩 Module 3 — Reproduction évolutive (À FAIRE)
-🎯 Objectifs
-Créer un système génétique simple mais évolutif.
-
-🔧 Sous‑modules
-Traits hérités.
-
-Mutations contrôlées.
-
-Diversification génétique.
-
-Coût énergétique ajustable.
-
-Influence de l’environnement sur la reproduction.
-
-🧩 Module 4 — Écosystème dynamique (À FAIRE)
-🎯 Objectifs
-Faire évoluer le monde lui-même.
-
-🔧 Sous‑modules
-Régénération adaptative des ressources.
-
-Zones riches / zones pauvres.
-
-Obstacles évolutifs (croissance, disparition).
-
-Événements aléatoires optionnels (sécheresse, abondance).
-
-Influence de la densité de population.
-
-🧩 Module 5 — Optimisation & performance (À FAIRE)
-🎯 Objectifs
-Assurer fluidité et scalabilité.
-
-🔧 Sous‑modules
-Spatial hashing (grille optimisée).
-
-Mise à jour par batch.
-
-Vision optimisée (éviter les scans inutiles).
-
-Réduction des collisions.
-
-Profiling & optimisation ciblée.
-
-🧩 Module 6 — HUD global (À FAIRE — PRIORITAIRE)
-🎯 Objectifs
-Afficher les statistiques globales de l’écosystème en temps réel, sur un seul écran.
-
-🔧 Contenu du HUD
-Nombre de créatures vivantes.
-
-Âge moyen.
-
-Énergie moyenne.
-
-% morts par énergie.
-
-% morts par vieillesse.
-
-Nombre de naissances (initiales / reproduction).
-
-Taux de reproduction.
-
-Cycle actuel.
-
-Ressources restantes.
-
-Densité de population.
-
-État global (croissance / déclin).
-
-🖥️ Interface
-Panneau latéral droit.
-
-Mise à jour automatique.
-
-Style lisible, compact, non intrusif.
-
-🧩 Module 7 — Trace de vie (PLUS TARD)
-🎯 Objectifs
-Permettre un suivi détaillé d’une ou plusieurs créatures, mais sans l’afficher en permanence.
-
-🔧 Sous‑modules
-Panneau optionnel (fenêtre flottante ou onglet).
-
-Timeline complète : naissance → décisions → déplacements → reproduction → mort.
-
-Possibilité de suivre plusieurs créatures.
-
-Export possible (plus tard).
-
-📝 Note
-Le logger actuel est déjà prêt pour ce module.
-
-🧩 Module 8 — Interface utilisateur avancée (À FAIRE)
-🎯 Objectifs
-Rendre la simulation agréable à manipuler.
-
-🔧 Sous‑modules
-Boutons : Pause / Play / Reset.
-
-Contrôle de vitesse.
-
-Sélecteur de créature.
-
-Zoom / déplacement de la caméra.
-
-Mode “analyse”.
-
-🧩 Module 9 — Idées futures (OPTIONNEL)
-Mini‑carte.
-
-Graphiques d’évolution (population, énergie, ressources).
-
-Export CSV des stats.
-
-Mode “scénarios”.
-
-Mode “compétition” entre espèces.
-
-Mode “évolution accélérée”.
-
-🎉 Conclusion
-Ce plan te donne :
-
-une vision claire
-
-une progression logique
-
-une architecture modulaire
-
-une interface propre
-
-un moteur évolutif
-
-Et surtout :
-➡️ un seul écran, avec HUD global maintenant, et trace de vie plus tard.
