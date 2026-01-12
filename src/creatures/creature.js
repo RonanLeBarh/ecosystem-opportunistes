@@ -140,7 +140,7 @@ export class Creature {
                 prey.die(world);
 
                 // remplacer la créature dans la cellule
-                cell.creature = this;
+                world.moveCreature(this.x, this.y, newX, newY);
                 this.x = newX;
                 this.y = newY;
 

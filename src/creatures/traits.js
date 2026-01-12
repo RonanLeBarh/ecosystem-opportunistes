@@ -43,15 +43,23 @@ export class Traits {
 
     // Hérite des traits du parent avec mutation légère
     static inherit(parentTraits) {
+        
+        // Fonction de mutation
         const mutate = (value, amount = CONFIG.MUTATION_AMOUNT) => {
             let v = value + (Math.random() * 2 - 1) * amount;
             return Math.min(1, Math.max(0, v)); // clamp 0–1
         };
-
+        // Mutation couleur
         const mutateColor = (value) => {
             let v = value + Math.floor((Math.random() * 2 - 1) * CONFIG.COLOR_MUTATION_AMOUNT);
             return Math.min(255, Math.max(0, v));
         };
+        // Mutation légère
+        let newSpeed = parentTraits.speed + (Math.random() * 2 - 1) * CONFIG.MUTATION_AMOUNT;
+
+        // Clamp dans les bornes
+        newSpeed = Math.max(CONFIG.GENE_LIMITS.SPEED_MIN, Math.min(CONFIG.GENE_LIMITS.SPEED_MAX, newSpeed));
+
 
         return new Traits({
             // Couleur
@@ -67,7 +75,7 @@ export class Traits {
             fear: mutate(parentTraits.fear),
 
             // Physique
-            speed: parentTraits.speed, // mutation possible plus tard
+            speed: newSpeed,
             efficiency: mutate(parentTraits.efficiency),
             max_age: parentTraits.max_age + (Math.random() * 2 - 1) * CONFIG.AGE_MUTATION_AMOUNT
         });

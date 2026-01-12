@@ -6,6 +6,17 @@ export class Behavior {
     static decide(creature, world) {
         const cell = world.getCell(creature.x, creature.y);
 
+        // 0. Si ressource sur place → manger
+        if (cell.resource) {
+            world.simulation.logger.log("decision", {
+                creatureId: creature.id,
+                action: "eat",
+                reason: "resource_on_cell",
+                config: CONFIG
+            });
+
+            return "eat";
+        }
         // 1. Si carnivore → chercher une proie
         if (creature.genes.carnivore > 0.5) {
             const prey = this.findNearbyPrey(creature, world);
@@ -18,18 +29,6 @@ export class Behavior {
                 });
                 return { type: "move_towards", target: prey };
             }
-        }
-
-        // 1.5. Si ressource sur place → manger
-        if (cell.resource) {
-            world.simulation.logger.log("decision", {
-                creatureId: creature.id,
-                action: "eat",
-                reason: "resource_on_cell",
-                config: CONFIG
-            });
-
-            return "eat";
         }
 
         // 2. Chercher une ressource proche
