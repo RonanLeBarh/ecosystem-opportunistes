@@ -30,11 +30,12 @@ export class Logger {
             "death_energy": "DEBUG_DEATH_ENERGY",
             "death_age": "DEBUG_DEATH_AGE",
             "predation" : "DEBUG_PREDATION",
+            "attack_blocked": "DEBUG_ATTACK_BLOCKED",
 
 
             // Population
             "population": "DEBUG_POPULATION",
-            "cycle": "DEBUG_POPULATION",
+            "cycle": "DEBUG_CYCLE",
         };
 
 
@@ -57,6 +58,7 @@ export class Logger {
             "death_energy": "Mort par énergie",
             "death_age": "Mort par âge",
             "predation" : "Mort par une autre créature",
+            "attack_blocked": "Attaque bloquée",
 
             "population": "Population",
             "cycle": "Cycle",
@@ -67,8 +69,43 @@ export class Logger {
     log(type, data) {
         if (type === "birth_initial") this.simulation.stats.birthInitial++;
         if (type === "birth_reproduction") this.simulation.stats.birthReproduction++;
-        if (type === "death_energy") this.simulation.stats.deathEnergy++;
+        if (type === "death_energy") {
+            this.simulation.stats.deathEnergy++;
+            
+            // 📊 Comptage détaillé par type de créature
+            if (data.creatureId) {
+                const creature = this.simulation.creatures.find(c => c.id === data.creatureId);
+                if (creature) {
+                    if (creature.genes.carnivore > 0.66) {
+                        this.simulation.stats.deathCarnivoreHunger++;
+                        this.simulation.stats.deathByType.carnivore++;
+                    } else if (creature.genes.carnivore < 0.33) {
+                        this.simulation.stats.deathHerbivoreHunger++;
+                        this.simulation.stats.deathByType.herbivore++;
+                    } else {
+                        this.simulation.stats.deathOmnivoreHunger++;
+                        this.simulation.stats.deathByType.omnivore++;
+                    }
+                }
+            }
+        }
         if (type === "death_age") this.simulation.stats.deathAge++;
+        if (type === "predation") {
+            this.simulation.stats.deathsByAttack++;
+            
+            // 🗡️ Comptage détaillé des victimes par type
+            if (data.prey) {
+                // Utiliser les données directes du log au lieu de chercher dans la liste
+                const preyCarnivore = data.preyCarnivore || 0;
+                if (preyCarnivore > 0.66) {
+                    this.simulation.stats.deathByAttackByType.carnivore++;
+                } else if (preyCarnivore < 0.33) {
+                    this.simulation.stats.deathByAttackByType.herbivore++;
+                } else {
+                    this.simulation.stats.deathByAttackByType.omnivore++;
+                }
+            }
+        }
         
         if (!DEBUG_CONFIG.DEBUG) return;
 

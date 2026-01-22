@@ -1,4 +1,4 @@
-# Requirements — Simulateur d’Écosystème Évolutif
+# Requirements — Simulateur d’Écosystème Évolutif 
 
 ## 1. Objectif du projet
 
@@ -72,6 +72,12 @@ Une créature meurt si :
 Une créature peut se reproduire si :
 - son énergie dépasse un seuil configurable  
 - une case libre est disponible autour d’elle  
+- un partenaire compatible est à proximité (reproduction sexuée)
+
+La reproduction nécessite **deux créatures** qui vont :
+- croiser leurs gènes (50% parent1 + 50% parent2)
+- appliquer des mutations sur les gènes résultants
+- créer un descendant dans une case libre adjacente  
 
 ---
 

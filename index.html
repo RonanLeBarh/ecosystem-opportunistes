@@ -8,60 +8,77 @@
 </head>
 
 <body>
+    <header class="main-header">
+        <h1>EvoGenesis — Écosystème Émergent</h1>
+    </header>
     <div id="split">
         <div class="half" id="left">
             <canvas id="worldCanvas"></canvas>
         </div>
 
         <div class="half" id="right">
-            <div id="right"></div>
-                <div id="hud">
-                    <h2>Écosystème</h2>
-                    <!-- tes stats -->
-                    <div class="hud-item"><span class="label">Créatures vivantes :</span><span id="hud-creatures">0</span>
+            <div style="display: flex; width: 100%;">
+                <!-- Colonne 1: Écosystème + Statistiques -->
+                <div class="hud-column">
+                    <div id="hud">
+                        <h2>🌍 Écosystème</h2>
+                        <div class="hud-item"><span class="label">Créatures vivantes :</span><span id="hud-creatures">0</span></div>
+                        <div class="hud-item"><span class="label">Âge moyen :</span><span id="hud-age">0</span></div>
+                        <div class="hud-item"><span class="label">Cycle :</span><span id="hud-cycle">0</span></div>
+                        <div class="hud-item"><span class="label">Ressources restantes :</span><span id="hud-resources">0</span></div>
+                        <div class="hud-item"><span class="label">Naissances (init / rep) :</span><span id="hud-births">0 / 0</span></div>
                     </div>
-                    <div class="hud-item"><span class="label">Âge moyen :</span><span id="hud-age">0</span></div>
-                    <div class="hud-item"><span class="label">% morts énergie :</span><span id="hud-death-energy">0%</span>
+                    
+                    <div id="hud-stats">
+                        <h2>📊 Statistiques</h2>
+                        <div class="hud-item"><span class="label">% morts énergie :</span><span id="hud-death-energy">0%</span></div>
+                        <div class="hud-subtitle">Détails morts de faim :</div>
+                        <div class="hud-item"><span class="label">* carnivores :</span><span id="hud-death-carnivore-hunger">0%</span></div>
+                        <div class="hud-item"><span class="label">* herbivores :</span><span id="hud-death-herbivore-hunger">0%</span></div>
+                        <div class="hud-item"><span class="label">* omnivores :</span><span id="hud-death-omnivore-hunger">0%</span></div>
+                        
+                        <div class="hud-item"><span class="label">% morts vieillesse :</span><span id="hud-death-age">0%</span></div>
+                        <div class="hud-item"><span class="label">% morts attaques :</span><span id="hud-death-attack">0%</span></div>
+                        <div class="hud-subtitle">Détails morts par attaques :</div>
+                        <div class="hud-item"><span class="label">* carnivores tués :</span><span id="hud-death-attack-carnivore">0%</span></div>
+                        <div class="hud-item"><span class="label">* herbivores tués :</span><span id="hud-death-attack-herbivore">0%</span></div>
+                        <div class="hud-item"><span class="label">* omnivores tués :</span><span id="hud-death-attack-omnivore">0%</span></div>
                     </div>
-                    <div class="hud-item"><span class="label">% morts vieillesse :</span><span id="hud-death-age">0%</span>
-                    </div>
-                    <div class="hud-item"><span class="label">Naissances (init / rep) :</span><span id="hud-births">0 /
-                            0</span></div>
-                    <div class="hud-item"><span class="label">Cycle :</span><span id="hud-cycle">0</span></div>
-                    <div class="hud-item"><span class="label">Ressources restantes :</span><span id="hud-resources">0</span>
-                    </div>
+                </div>
+                
+                <!-- Colonne 2: Génétique -->
+                <div class="hud-column">
                     <div id="hud-genetics">
-                        <h3>Génétique</h3>
-                        <div>Moyenne carnivore : <span id="hud-carnivore-avg">0</span></div>
-                        <div>Herbivores : <span id="hud-herbivores">0</span></div>
-                        <div>Omnivores : <span id="hud-omnivores">0</span></div>
-                        <div>Carnivores : <span id="hud-carnivores">0</span></div>
-                        <h3>Génétique moyenne</h3>
-                        <div>Vitesse : <span id="hud-avg-speed"></span></div>
-                        <div>Vision : <span id="hud-avg-vision"></span></div>
-                        <div>Métabolisme : <span id="hud-avg-metabolism"></span></div>
-                        <div>Fertilité : <span id="hud-avg-fertility"></span></div>
-                        <div>Mutation : <span id="hud-avg-mutation"></span></div>
-                        <h3>Traits moyens</h3>
-                        <div>Âge max : <span id="hud-avg-maxage"></span></div>
-                        <div>Couleur moyenne : 
-                            <span id="hud-avg-color"></span>
-                        </div>
-                            <h3>Top 3 couleurs</h3>
+                        <h2>🧬 Génétique</h2>
+                        <div class="hud-item"><span class="label">Moyenne carnivore :</span><span id="hud-carnivore-avg">0</span></div>
+                        <div class="hud-item"><span class="label">Herbivores :</span><span id="hud-herbivores">0</span></div>
+                        <div class="hud-item"><span class="label">Omnivores :</span><span id="hud-omnivores">0</span></div>
+                        <div class="hud-item"><span class="label">Carnivores :</span><span id="hud-carnivores">0</span></div>
+                        
+                        <div class="hud-subtitle">Génétique moyenne :</div>
+                        <div class="hud-item"><span class="label">Vitesse :</span><span id="hud-avg-speed"></span></div>
+                        <div class="hud-item"><span class="label">Vision :</span><span id="hud-avg-vision"></span></div>
+                        <div class="hud-item"><span class="label">Métabolisme :</span><span id="hud-avg-metabolism"></span></div>
+                        <div class="hud-item"><span class="label">Fertilité :</span><span id="hud-avg-fertility"></span></div>
+                        <div class="hud-item"><span class="label">Mutation :</span><span id="hud-avg-mutation"></span></div>
+                        <div class="hud-item"><span class="label">Âge max :</span><span id="hud-avg-maxage"></span></div>
+                        <div class="hud-item"><span class="label">Couleur moyenne :</span><span id="hud-avg-color"></span></div>
+                        
+                        <div class="hud-subtitle">Top 3 couleurs :</div>
                         <div id="hud-top-colors"></div>
-
-                        <h3>Top 3 gènes dominants</h3>
+                        
+                        <div class="hud-subtitle">Top 3 gènes dominants :</div>
                         <div id="hud-top-genes"></div>
                     </div>
                 </div>
-                <div id="controls">
-                    <button id="btn-pause">Pause</button>
-                    <button id="btn-reset">Reset</button>
+            </div>
+            <div id="controls">
+                <button id="btn-pause">Pause</button>
+                <button id="btn-reset">Reset</button>
 
-                    <div class="control-group">
-                        <label for="speed">Vitesse :</label>
-                        <input type="range" id="speed" min="1" max="20" value="1">
-                    </div>
+                <div class="control-group">
+                    <label for="speed">Vitesse :</label>
+                    <input type="range" id="speed" min="1" max="20" value="1">
                 </div>
             </div>
         </div>

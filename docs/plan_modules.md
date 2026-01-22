@@ -1,4 +1,4 @@
-# Plan détaillé des modules — Simulateur d’Écosystème Évolutif
+# Plan détaillé des modules — Simulateur d’Écosystème Évolutif 
 
 Ce document décrit précisément le rôle de chaque module du projet.  
 Il sert de guide pour maintenir une architecture claire, cohérente et extensible.
@@ -103,12 +103,14 @@ Responsabilités :
 
 ## 2.4 reproduction.js
 Responsabilités :
-- Vérifier si une créature peut se reproduire
-- Créer un descendant
-- Appliquer les mutations génétiques
+- Vérifier si deux créatures peuvent se reproduire
+- Vérifier la compatibilité et la proximité des partenaires
+- Créer un descendant par croisement génétique
+- Appliquer les mutations sur les gènes hérités
 - Placer le descendant dans une case libre
-- Gérer le coût énergétique
-- Mutation contrôlée par `mutationRate`
+- Gérer le coût énergétique pour les deux parents
+- Croisement : 50% gènes parent1 + 50% gènes parent2 + mutations
+- Mutation contrôlée par `mutationRate` des deux parents
 
 ---
 

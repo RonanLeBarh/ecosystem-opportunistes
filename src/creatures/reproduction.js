@@ -68,7 +68,7 @@ export class Reproduction {
     }
     static mutateGene(value, rate, min = 0.1, max = 10) {
         if (Math.random() < rate) {
-            value += (Math.random() - 0.5) * 0.2;
+            value += (Math.random() - 0.5) * 0.8; // Augmente la variation
         }
         return Math.max(min, Math.min(max, value));
     }

@@ -1,4 +1,4 @@
-# PLAN.md — Architecture & Roadmap du Simulateur d’Écosystème
+# PLAN.md — Architecture & Roadmap du Simulateur d’Écosystème 
 
 ## 🧭 Objectif général
 Créer un simulateur d’écosystème minimaliste mais évolutif, où des créatures pixelisées interagissent dans un monde 2D.  
@@ -47,11 +47,13 @@ Le tout avec un HUD clair, un logger modulaire, et une architecture propre.
 - Mort propre
 - Reproduction évolutive
 
-## ✔ 1.4 Behavior simple
-- Priorité ressource
-- Priorité chasse si carnivore
-- Vision fonctionnelle
-- Déplacements cohérents
+## ✔ 1.4 Reproduction évolutive
+- Reproduction sexuée avec croisement génétique
+- Deux parents nécessaires pour la reproduction
+- Croisement : 50% gènes parent1 + 50% gènes parent2
+- Mutations appliquées sur les gènes hérités
+- Coût énergétique partagé entre les deux parents
+- Placement du descendant dans case libre adjacente
 
 ## ✔ 1.5 Ressources
 - Génération initiale
@@ -81,7 +83,14 @@ Le tout avec un HUD clair, un logger modulaire, et une architecture propre.
 
 # 🧩 2. Modules en cours (partiellement implémentés)
 
-## 🔄 2.1 Behavior évolutif
+## 🔄 2.1 Reproduction sexuée
+- Détection de partenaires compatibles
+- Croisement génétique (50/50)
+- Mutations sur gènes hérités
+- Coût énergétique partagé
+- Placement intelligent du descendant
+
+## 🔄 2.2 Behavior évolutif
 - Chasse fonctionnelle
 - Recherche de ressource OK
 - Déplacements OK
@@ -110,7 +119,14 @@ Le tout avec un HUD clair, un logger modulaire, et une architecture propre.
 
 # 🧩 3. Modules à venir (prochaines étapes)
 
-## ⏳ 3.1 Behavior avancé
+## ⏳ 3.1 Reproduction sexuée avancée
+- Compatibilité génétique entre partenaires
+- Préférences d'accouplement
+- Distance optimale pour reproduction
+- Stratégies de sélection de partenaire
+- Héritage pondéré (dominant/récessif)
+
+## ⏳ 3.2 Behavior avancé
 - Système de score interne
 - Pondération par faim / danger / opportunité
 - Fuite des prédateurs
@@ -118,22 +134,22 @@ Le tout avec un HUD clair, un logger modulaire, et une architecture propre.
 - Exploration intelligente
 - Mémoire locale (dernière ressource, dernier danger)
 
-## ⏳ 3.2 Événements dynamiques
+## ⏳ 3.3 Événements dynamiques
 - Pénuries
 - Zones riches
 - Migrations
 - Extinctions de lignées
 - Explosion de population
 
-## ⏳ 3.3 HUD avancé
+## ⏳ 3.4 HUD avancé
 - Graphiques d’évolution (population, carnivorisme, vitesse)
 - Mini-map
 - Sélection d’une créature (fiche détaillée)
 
-## ⏳ 3.4 Logging avancé
+## ⏳ 3.5 Logging avancé
 - Export JSON
 - Résumé automatique
-- Détection d’événements
+- Détection d'événements
 - Analyse narrative
 
 ---
@@ -160,13 +176,13 @@ Aucune dérive, aucune incohérence :
 
 | Version | Contenu |
 |--------|---------|
-| **0.4 (actuel)** | Moteur complet, génétique, HUD, prédation, stats |
-| **0.5** | Behavior avancé (fuite, agressivité, curiosité) |
-| **0.6** | Mémoire locale + imitation |
-| **0.7** | Événements dynamiques |
-| **0.8** | HUD graphique + mini-map |
-| **0.9** | Export / résumé / analyse |
-| **1.0** | Version stable, écosystème complet |
+| **0.4 (actuel)** | Moteur complet, génétique, HUD, prédation, stats détaillées |
+| **0.5** | Reproduction sexuée (croisement génétique 50/50) |
+| **0.6** | Behavior avancé (fuite, agressivité, curiosité) |
+| **0.7** | Mémoire locale + imitation |
+| **0.8** | Événements dynamiques |
+| **0.9** | HUD graphique + mini-map |
+| **1.0** | Export / résumé / analyse |
 
 ---
 

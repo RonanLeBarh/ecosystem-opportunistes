@@ -35,11 +35,28 @@ export class Simulation {
             averageAge: 0,
             deathEnergy: 0,
             deathAge: 0,
+            deathsByAttack: 0,
             deathEnergyPercent: 0,
             deathAgePercent: 0,
+            deathsByAttackPercent: 0,
             birthInitial: 0,
             birthReproduction: 0,
-            totalResources: 0
+            totalResources: 0,
+            // 📊 Nouvelles statistiques détaillées
+            deathCarnivoreHunger: 0,    // Carnivores morts de faim (pas de proies)
+            deathHerbivoreHunger: 0,    // Herbivores morts de faim (pas de ressources)
+            deathOmnivoreHunger: 0,     // Omnivores morts de faim
+            deathByType: {
+                carnivore: 0,
+                herbivore: 0,
+                omnivore: 0
+            },
+            // 🗡️ Statistiques détaillées des morts par attaques
+            deathByAttackByType: {
+                carnivore: 0,    // Carnivores tués par attaques
+                herbivore: 0,    // Herbivores tués par attaques
+                omnivore: 0      // Omnivores tués par attaques
+            }
         };
 
     }
@@ -128,6 +145,9 @@ export class Simulation {
             // 🔥 Ralentir uniquement les petites vitesses
             if (cycles === 1) cycles = 1 / CONFIG.SLOW_FACTOR;
 
+            // 🚀 Limite de cycles par frame pour éviter les lags
+            cycles = Math.min(cycles, CONFIG.MAX_CYCLES_PER_FRAME);
+
             // cycles peut être fractionnaire → accumulateur
             this._accumulator = (this._accumulator || 0) + cycles;
 
@@ -152,9 +172,24 @@ export class Simulation {
         const totalAge = creatures.reduce((sum, c) => sum + c.age, 0);
         this.stats.averageAge = creatures.length ? totalAge / creatures.length : 0;
 
-        const totalDeaths = this.stats.deathEnergy + this.stats.deathAge;
+        const totalDeaths = this.stats.deathEnergy + this.stats.deathAge + this.stats.deathsByAttack;
         this.stats.deathEnergyPercent = totalDeaths ? (this.stats.deathEnergy / totalDeaths) * 100 : 0;
         this.stats.deathAgePercent = totalDeaths ? (this.stats.deathAge / totalDeaths) * 100 : 0;
+        this.stats.deathsByAttackPercent = totalDeaths ? (this.stats.deathsByAttack / totalDeaths) * 100 : 0;
+
+        // 📊 Pourcentages détaillés par type de créature
+        const totalEnergyDeaths = this.stats.deathCarnivoreHunger + this.stats.deathHerbivoreHunger + this.stats.deathOmnivoreHunger;
+        this.stats.deathCarnivoreHungerPercent = totalEnergyDeaths ? (this.stats.deathCarnivoreHunger / totalEnergyDeaths) * 100 : 0;
+        this.stats.deathHerbivoreHungerPercent = totalEnergyDeaths ? (this.stats.deathHerbivoreHunger / totalEnergyDeaths) * 100 : 0;
+        this.stats.deathOmnivoreHungerPercent = totalEnergyDeaths ? (this.stats.deathOmnivoreHunger / totalEnergyDeaths) * 100 : 0;
+        
+        // 🗡️ Pourcentages détaillés des morts par attaques
+        const totalAttackDeaths = this.stats.deathByAttackByType.carnivore + this.stats.deathByAttackByType.herbivore + this.stats.deathByAttackByType.omnivore;
+        this.stats.deathByAttackByTypePercent = {
+            carnivore: totalAttackDeaths ? (this.stats.deathByAttackByType.carnivore / totalAttackDeaths) * 100 : 0,
+            herbivore: totalAttackDeaths ? (this.stats.deathByAttackByType.herbivore / totalAttackDeaths) * 100 : 0,
+            omnivore: totalAttackDeaths ? (this.stats.deathByAttackByType.omnivore / totalAttackDeaths) * 100 : 0
+        };
 
         // 🔥 Correction : compter les ressources dans le monde
         let totalResources = 0;
