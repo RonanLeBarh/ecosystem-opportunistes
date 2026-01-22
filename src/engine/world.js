@@ -50,6 +50,12 @@ export class World {
 
         toCell.creature = fromCell.creature;
         fromCell.creature = null;
+        
+        // Met à jour les coordonnées de la créature
+        if (toCell.creature) {
+            toCell.creature.x = toX;
+            toCell.creature.y = toY;
+        }
 
         return true;
     }
@@ -57,17 +63,22 @@ export class World {
     // Ajoute une ressource
     addResource(x, y) {
         const cell = this.getCell(x, y);
-        if (cell && !cell.obstacle) {
+        if (cell && !cell.obstacle && !cell.creature) {
             cell.resource = true;
+            return true;
         }
+        return false;
     }
 
     // Retire une ressource
     removeResource(x, y) {
         const cell = this.getCell(x, y);
         if (cell) {
+            const hadResource = cell.resource;
             cell.resource = false;
+            return hadResource;
         }
+        return false;
     }
 
     // Vérifie si une case est un obstacle

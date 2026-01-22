@@ -19,6 +19,7 @@ export class Creature {
         this.energy = CONFIG.CREATURE_INITIAL_ENERGY;
         this.age = 0;
         this.maxEnergy = CONFIG.CREATURE_MAX_ENERGY;
+        this.dead = false;
 
 
         // Mémoire simple (sera étendue plus tard)
